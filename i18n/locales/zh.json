@@ -1,0 +1,44 @@
+{
+  "slogan": "找到Wi-Fi和eSIM，随时随地保持连接！",
+  "hero_subtitle": "发现免费Wi-Fi、实惠的eSIM和全球安全连接。",
+  "get_started": "开始使用",
+  "offline_message": "您已离线，某些功能可能会受限。",
+  "nav": {
+    "wifi": "Wi-Fi",
+    "esim": "eSIM",
+    "about": "关于我们",
+    "login": "登录",
+    "signup": "注册",
+    "admin": "管理员"
+  },
+  "footer": {
+    "copyright": "版权",
+    "terms": "条款",
+    "privacy": "隐私"
+  },
+  "features": {
+    "wifi": "全球Wi-Fi查找",
+    "wifi_desc": "通过地理定位或标签找到附近的免费或安全Wi-Fi热点。",
+    "esim": "eSIM市场",
+    "esim_desc": "按地区或国家选择适合您旅行需求的eSIM计划。",
+    "security": "网络安全",
+    "security_desc": "人工智能驱动的网络检查和VPN推荐。",
+    "gamification": "获得奖励",
+    "gamification_desc": "赚取TRAVEL积分、徽章和排行榜名次。"
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "points": "您的积分",
+    "progress": "等级进度",
+    "notifications": "通知",
+    "referrals": "推荐",
+    "leaderboard": "排行榜",
+    "rank": "排名",
+    "user": "用户",
+    "view": "查看",
+    "invite": "邀请"
+  },
+  "notifications": {
+    "wifi_nearby": "附近有新的Wi-Fi！"
+  }
+}

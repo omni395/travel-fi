@@ -1,0 +1,169 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int                  @id @default(autoincrement())
+  email             String               @unique
+  password          String? // Hashed, null for OAuth/Web3
+  walletAddress     String? // Metamask
+  points            Int                  @default(0) // TRAVEL
+  role              String               @default("user") // user, admin, moderator
+  referralCode      String?              @unique
+  pushEnabled       Boolean              @default(false)
+  lastLocation      Json? // {lat, lng}
+  language          String               @default("en")
+  travelPreferences Json? // {countries: ["Japan"], budget: 20}
+  badges            String[]             @default([]) // ["Contributor Bronze"]
+  leaderboardRank   Int? // Cached rank
+  profilePicture    String? // User avatar URL
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  sessions          Session[]
+  contributions     Contribution[]
+  reviews           Review[]
+  referrals         ReferralSuggestion[] @relation("user")
+  suggested         ReferralSuggestion[] @relation("suggestedUser")
+  features          UserFeature[]
+  notifications     Notification[]
+  auditLogs         AuditLog[] // Добавлено
+  wifiPoints        WifiPoint[] // Добавлено
+  securityReports   SecurityReport[] // Добавлено
+  pushSubscriptions PushSubscription[] // Добавлено
+}
+
+model UserFeature {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  feature   String // "unlimited_search", "offline_map"
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  token     String   @unique
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model WifiPoint {
+  id              Int              @id @default(autoincrement())
+  userId          Int
+  user            User             @relation(fields: [userId], references: [id])
+  lat             Float
+  lng             Float
+  ssid            String // Wi-Fi network name
+  password        String? // Hashed
+  isPublic        Boolean
+  quality         Int // 1-5, based on user input
+  isModerated     Boolean          @default(false)
+  moderationNote  String? // Rejection reason
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  securityReports SecurityReport[] // Добавлено
+}
+
+model EsimTariff {
+  id             Int      @id @default(autoincrement())
+  provider       String // \"Airalo\"
+  country        String
+  countryCode    String
+  data           Int // GB
+  price          Float // USD
+  isModerated    Boolean  @default(false)
+  moderationNote String? // Rejection reason
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Contribution {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  user      User            @relation(fields: [userId], references: [id])
+  type      String // \"add_wifi\", \"update_esim\", \"security_report\"
+  points    Int // Points awarded
+  createdAt DateTime        @default(now())
+  reportId  Int? // Добавлено
+  report    SecurityReport? @relation(fields: [reportId], references: [id]) // Добавлено
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  targetId   Int // `wifiPoint.id` or `esimTariff.id`
+  targetType String // \"wifi\" or \"esim\"
+  rating     Int // 1-5
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int // Admin/moderator
+  user       User     @relation(fields: [userId], references: [id])
+  action     String // \"approve_wifi\", \"delete_esim\"
+  targetType String // \"wifi\" or \"esim\"
+  targetId   Int // ID of the target object
+  details    String? // Additional info
+  createdAt  DateTime @default(now())
+}
+
+model SecurityReport {
+  id            Int            @id @default(autoincrement())
+  wifiPointId   Int
+  wifiPoint     WifiPoint      @relation(fields: [wifiPointId], references: [id])
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id])
+  risks         String? // \"MITM risk\"
+  status        String         @default("pending")
+  createdAt     DateTime       @default(now())
+  contributions Contribution[] // Добавлено
+}
+
+model Affiliate {
+  id         Int      @id @default(autoincrement())
+  provider   String // \"Airalo\"
+  discount   Float // USD (5.0)
+  travelCost Int // TRAVEL (100)
+  link       String // Affiliate URL
+  createdAt  DateTime @default(now())
+}
+
+model ReferralSuggestion {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation("user", fields: [userId], references: [id])
+  suggestedUserId Int
+  suggestedUser   User     @relation("suggestedUser", fields: [suggestedUserId], references: [id])
+  aiScore         Float // AI confidence
+  createdAt       DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // \"wifi_nearby\", \"esim_promo\", \"security_alert\"
+  content   String // \"New Wi-Fi at Cafe Paris\"
+  read      Boolean  @default(false)
+  action    String? // \"view_leaderboard\", \"add_wifi\"
+  createdAt DateTime @default(now())
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  endpoint  String // Web Push endpoint
+  keys      String // PushSubscriptionKeys
+  createdAt DateTime @default(now())
+}

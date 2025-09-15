@@ -1,0 +1,44 @@
+{
+  "slogan": "Find Wi-Fi & eSIM, stay connected anywhere!",
+  "hero_subtitle": "Discover free Wi-Fi, affordable eSIMs, and secure connections worldwide.",
+  "get_started": "Get Started",
+  "offline_message": "You are offline. Some features may be limited.",
+  "nav": {
+    "wifi": "Wi-Fi",
+    "esim": "eSIM",
+    "about": "About",
+    "login": "Login",
+    "signup": "Sign Up",
+    "admin": "Admin"
+  },
+  "footer": {
+    "copyright": "Copyright",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "features": {
+    "wifi": "Global Wi-Fi Finder",
+    "wifi_desc": "Locate free or secure Wi-Fi hotspots nearby with geolocation or tags.",
+    "esim": "eSIM Marketplace",
+    "esim_desc": "Find the best eSIM plans for your travel needs by region or country.",
+    "security": "Network Safety",
+    "security_desc": "AI-powered network checks and VPN recommendations.",
+    "gamification": "Earn Rewards",
+    "gamification_desc": "Gain TRAVEL points, badges, and leaderboard ranks."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "points": "Your Points",
+    "progress": "Level Progress",
+    "notifications": "Notifications",
+    "referrals": "Referrals",
+    "leaderboard": "Leaderboard",
+    "rank": "Rank",
+    "user": "User",
+    "view": "View",
+    "invite": "Invite"
+  },
+  "notifications": {
+    "wifi_nearby": "New Wi-Fi nearby!"
+  }
+}
