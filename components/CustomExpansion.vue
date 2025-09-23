@@ -14,7 +14,7 @@ defineProps({
 </script>
 <style scoped>
 .travel-expansion .v-expansion-panel-title {
-  background: #0288D1; /* primary */
+  background: rgb(var(--v-theme-primary));
   color: #FFFFFF;
 }
 .travel-expansion .v-expansion-panel-content {

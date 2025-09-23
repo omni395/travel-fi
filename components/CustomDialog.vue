@@ -20,7 +20,7 @@ defineProps({
   transition: transform 0.3s ease;
 }
 .travel-dialog .v-card-actions {
-  background: #0288D1; /* primary */
+  background: rgb(var(--v-theme-primary));
 }
 .travel-dialog .v-btn {
   color: #FFFFFF;

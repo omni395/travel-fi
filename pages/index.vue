@@ -4,21 +4,19 @@
       {{ t('offline_message') }}
     </v-alert>
 
-    <!-- Hero Section -->
     <v-row class="hero-section" align="center" :class="{ 'full-height': isMobile }">
       <v-col cols="12" md="6">
         <h1 class="text-primary text-h3 font-weight-bold">{{ t('slogan') }}</h1>
         <p class="text-secondary text-h6 mt-4">{{ t('hero_subtitle') }}</p>
-        <CustomButton to="/signup" color="accent" variant="elevated" size="large" class="mt-4">
+        <CustomButton to="/auth/signup" color="accent" variant="elevated" size="large" class="mt-4">
           {{ t('get_started') }}
         </CustomButton>
       </v-col>
       <v-col cols="12" md="6">
-        <v-img src="/assets/images/hero-image.png" alt="TravelFi Hero" max-height="400" />
+        <v-img src="/assets/images/hero.png" alt="TravelFi Hero" max-height="400" />
       </v-col>
     </v-row>
 
-    <!-- Features Section -->
     <v-row class="mt-8">
       <v-col v-for="feature in features" :key="feature.title" cols="12" sm="6" md="3">
         <CustomCard>
@@ -35,25 +33,30 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import CustomButton from '@/components/CustomButton.vue';
-import CustomCard from '@/components/CustomCard.vue';
-import CustomIcon from '@/components/CustomIcon.vue';
-import CustomAlert from '@/components/CustomAlert.vue';
+import { computed } from 'vue';
 
-const { t } = useI18n();
+const { t, locale, locales } = useI18n();
 const isOffline = useOnline();
 const isMobile = useMediaQuery('(max-width: 600px)');
 
-useHead({
-  title: 'TravelFi - Wi-Fi & eSIM for Travelers',
+// Логи для проверки
+console.log('index.vue: Current i18n locale:', locale.value);
+console.log('index.vue: Available locales:', locales.value ? locales.value.map(l => l.code) : 'undefined');
+console.log('index.vue: Slogan translation:', t('slogan'));
+console.log('index.vue: Hero subtitle translation:', t('hero_subtitle'));
+
+const headData = computed(() => ({
+  title: t('slogan'),
   meta: [
     { name: 'description', content: t('slogan') },
     { name: 'keywords', content: 'travel Wi-Fi, best eSIM Europe' },
-    { property: 'og:title', content: 'TravelFi - Wi-Fi & eSIM for Travelers' },
+    { property: 'og:title', content: t('slogan') },
     { property: 'og:description', content: t('slogan') },
     { property: 'og:image', content: '/assets/images/og-image.png' },
   ],
-});
+}));
+
+useHead(headData);
 
 const features = [
   { title: t('features.wifi'), icon: 'mdi-wifi', description: t('features.wifi_desc') },

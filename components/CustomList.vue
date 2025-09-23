@@ -17,6 +17,6 @@ defineProps({
   transition: background 0.3s ease;
 }
 .travel-list .v-list-item:hover {
-  background: #26A69A; /* secondary */
+  background: rgb(var(--v-theme-secondary));
 }
 </style>

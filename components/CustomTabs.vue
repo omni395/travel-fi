@@ -18,11 +18,11 @@ defineProps({
 </script>
 <style scoped>
 .travel-tabs .v-tab--active {
-  background: linear-gradient(90deg, #0288D1, #26A69A); /* primary → secondary */
+  background: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
   color: #FFFFFF;
   transition: all 0.3s ease;
 }
 .travel-tabs .v-tabs-slider {
-  background-color: #FF5722; /* accent */
+  background-color: rgb(var(--v-theme-accent));
 }
 </style>

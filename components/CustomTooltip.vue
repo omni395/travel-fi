@@ -14,7 +14,7 @@ defineProps({
 </script>
 <style scoped>
 .travel-tooltip .v-tooltip-content {
-  background: #FF5722; /* accent */
+  background: rgb(var(--v-theme-accent));
   color: #FFFFFF;
   border-radius: 6px;
   transition: opacity 0.3s ease;

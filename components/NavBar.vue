@@ -13,30 +13,36 @@
         {{ t('nav.admin') }}
       </v-btn>
     </v-toolbar-items>
-    <CustomMenu color="primary">
-      <template #activator="{ props }">
-        <v-btn v-bind="props" variant="text" color="white">
-          {{ currentLocale.name }}
-          <v-icon right>mdi-chevron-down</v-icon>
+    <CustomButton :to="'/auth/login'" color="accent" variant="elevated" class="ml-4">
+      {{ t('nav.login') }}
+    </CustomButton>
+    <CustomButton :to="'/auth/signup'" color="accent" variant="elevated" class="ml-2">
+      {{ t('nav.signup') }}
+    </CustomButton>
+    <v-menu>
+      <template v-slot:activator="{ props }">
+        <v-btn
+          color="white"
+          v-bind="props"
+          class="language-menu-btn"
+          data-test="language-menu-btn"
+        >
+          {{ currentLocaleName || 'Select Language' }}
+          <v-icon end>mdi-menu-down</v-icon>
         </v-btn>
       </template>
-      <v-list>
+      <v-list bg-color="secondary">
         <v-list-item
           v-for="locale in availableLocales"
           :key="locale.code"
-          @click="switchLocale(locale.code)"
+          :value="locale.code"
+          @click="changeLocale(locale.code)"
+          data-test="language-item"
         >
-          {{ locale.name }}
+          <v-list-item-title color="white">{{ locale.name }}</v-list-item-title>
         </v-list-item>
       </v-list>
-    </CustomMenu>
-    <CustomButton :to="'/login'" color="accent" variant="elevated" class="ml-4">
-      {{ t('nav.login') }}
-    </CustomButton>
-    <CustomButton :to="'/signup'" color="accent" variant="elevated" class="ml-2">
-      {{ t('nav.signup') }}
-    </CustomButton>
-
+    </v-menu>
     <v-navigation-drawer v-model="drawer" temporary rail-width="56" v-if="isMobile">
       <v-list>
         <v-list-item v-for="item in navItems" :key="item.title" :to="item.to" @click="drawer = false">
@@ -52,35 +58,56 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { useCookie, useRoute } from '#app';
+import { computed, ref } from 'vue';
+import { useMediaQuery } from '@vueuse/core';
 import CustomButton from '@/components/CustomButton.vue';
-import CustomMenu from '@/components/CustomMenu.vue';
 
-const { t, locale, availableLocales } = useI18n();
+const { t, setLocale, locales, locale } = useI18n();
 const route = useRoute();
 const isMobile = useMediaQuery('(max-width: 600px)');
 const drawer = ref(false);
 
-// Mock admin status (replace with real auth logic)
 const isAdmin = ref(false);
 
-// Navigation items
 const navItems = [
   { title: t('nav.wifi'), to: '/wifi' },
   { title: t('nav.esim'), to: '/esim' },
   { title: t('nav.about'), to: '/about' },
 ];
 
-// Current locale name
-const currentLocale = computed(() => availableLocales.find(l => l.code === locale.value) || { name: 'English', code: 'en' });
+const availableLocales = computed(() => {
+  const locs = locales.value && Array.isArray(locales.value) ? locales.value : [
+    { code: 'en', name: 'Eng' },
+    { code: 'ru', name: 'Рус' },
+    { code: 'es', name: 'Esp' },
+    { code: 'zh', name: '中文' },
+  ];
+  return locs;
+});
 
-// Switch locale
-const switchLocale = (code) => {
-  locale.value = code;
+const currentLocaleName = computed(() => {
+  const current = availableLocales.value.find(l => l.code === locale.value);
+  const name = current ? current.name : 'Select Language';
+  return name;
+});
+
+const changeLocale = async (localeCode) => {
+  try {
+    await setLocale(localeCode);
+    useCookie('i18n_redirected').value = localeCode;
+  } catch (error) {
+  }
 };
 </script>
 
 <style scoped>
 .text-white {
   color: white !important;
+}
+.language-menu-btn {
+  text-transform: none;
+  min-width: 120px;
+  z-index: 1000;
 }
 </style>

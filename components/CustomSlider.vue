@@ -17,6 +17,6 @@ defineProps({
   transition: all 0.3s ease;
 }
 .travel-slider .v-slider-thumb {
-  background: #FF5722; /* accent */
+  background: rgb(var(--v-theme-accent));
 }
 </style>

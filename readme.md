@@ -23,15 +23,29 @@
 10. **Обмен**: Redeem 100 TRAVEL → скидка $5 (Airalo). Премиум-фичи за TRAVEL.
 
 ### Фичи
-- **PWA**: Offline-режим (частично: кэш user в dashboard.vue), Web Push, Vuetify UI, Leaflet карты (не реализовано).
+- **PWA**: 
+  - [x] Offline-режим (частично: кэш user в dashboard.vue)
+  - [x] Web Push
+  - [x] Кнопка установки приложения
+  - [ ] Leaflet карты (в процессе)
 - **WhatsApp-бот**: /find, /add, /review, /check security (Twilio, не реализовано).
 - **AI**:
-  - Поиск: Ранжировка eSIM/Wi-Fi (Hugging Face, sentence-transformers, не реализовано).
-  - Рефералка: Матчинг по гео (User.lastLocation, не реализовано).
-  - Безопасность: Анализ рисков, токсичности отзывов (Hugging Face detoxify, не реализовано).
-- **SEO**: @nuxtjs/seo (включает @nuxtjs/robots, nuxt-og-image). Ключи: "travel Wi-Fi", "best eSIM Europe". Реализовано в app.vue, index.vue, dashboard.vue.
-- **Web3**: TRAVEL как ERC-20 токен (Polygon mainnet, ethers.js) или баллы в Prisma (не реализовано).
-- **i18n**: Локали (en, ru, es, zh) с переводом, выбор языка в NavBar.vue, автоопределение (navigator.language).
+  - [ ] Поиск: Ранжировка eSIM/Wi-Fi (Hugging Face, sentence-transformers)
+  - [ ] Рефералка: Матчинг по гео (User.lastLocation)
+  - [ ] Безопасность: Анализ рисков, токсичности отзывов (Hugging Face detoxify)
+- **SEO**:
+  - [x] @nuxtjs/seo с базовой конфигурацией
+  - [x] Автоматическая генерация sitemap.xml
+  - [x] Настройка robots.txt
+  - [x] Open Graph разметка
+  - [x] Schema.org разметка
+- **Web3**: 
+  - [ ] TRAVEL как ERC-20 токен (Polygon mainnet, ethers.js)
+  - [x] Базовая интеграция Metamask (в процессе)
+- **i18n**:
+  - [x] Поддержка языков: en, ru, es, zh
+  - [x] Автоопределение языка
+  - [x] Переключение языка в интерфейсе
 
 ### Плюшки (геймификация)
 - **Beginner (5 вкладов)**: Бейдж, +3 TRAVEL, offlineMaps (3 дня).
@@ -46,18 +60,27 @@
 ## План разработки
 **Длительность**: MVP за 14–21 день, полный запуск за 6–8 недель. Всё в Docker (node:22-alpine), без локального Node.js. Хостинг: Render (free tier) → DigitalOcean (Droplet, $6/мес). Домен: travel-fi.com (~$10/год, Namecheap).
 
-### Этап 1: Подготовка (Дни 1–3) [Частично завершён]
-- **Сделано**:
-  - Репозиторий: `travel-fi` (предполагается создан).
-  - Docker: `docker-compose.yml` (app, postgres, redis).
-  - Nuxt: Инициализирован (`npx nuxi init`).
-  - Модули: `@nuxtjs/i18n`, `vuetify-nuxt-module`, `@vite-pwa/nuxt`, `@nuxtjs/seo` (включает @nuxtjs/robots, nuxt-og-image).
-  - Prisma: `schema.prisma` (таблицы: User, Session, WifiPoint, EsimTariff, etc.).
+### Этап 1: Подготовка (Дни 1–3) [Выполнено на 80%]
+- **Выполнено**:
+  - [x] Репозиторий и базовая структура проекта
+  - [x] Настройка Docker с Postgres и Redis
+  - [x] Базовая конфигурация Nuxt 4 с TypeScript
+  - [x] Интеграция Vuetify 3 с кастомной темой
+  - [x] Настройка PWA с кнопкой установки
+  - [x] Базовая SEO-оптимизация
+  - [x] Мультиязычность (i18n) с 4 языками
+  - [x] Базовая аутентификация (в процессе)
+  - [x] Модели Prisma и миграции
+
+- **В процессе**:
+  - [ ] Интеграция с Twilio для WhatsApp-бота
+  - [ ] Настройка AI-моделей (Hugging Face)
+  - [ ] Интеграция Web3 (Metamask)
+
 - **Осталось**:
-  - Подтвердить миграции: `npx prisma migrate dev --name init`.
-  - Купить домен: travel-fi.com (Namecheap).
-  - DNS: DigitalOcean (A-запись), HTTPS (Let’s Encrypt).
-  - Установить модули: `@nuxtjs/axios`, `@nuxtjs/leaflet`, `@nuxtjs/huggingface`, `ethers.js`, `moralis`, `web-push`.
+  - [ ] Купить домен: travel-fi.com (Namecheap)
+  - [ ] Настроить DNS и HTTPS
+  - [ ] Настроить CI/CD пайплайн
 - **Результат**: Репозиторий, Docker, база, домен.
 
 ### Этап 2: Авторизация и дашборд (Дни 4–7) [Частично завершён]
@@ -321,3 +344,58 @@ model PushSubscription {
   keys      Json      // {p256dh, auth}
   createdAt DateTime  @default(now())
 }
+
+---
+
+## Обновления (сентябрь 2025)
+- SEO: включён `@nuxtjs/seo`; сайткарта генерируется в рантайме по адресу `/api/sitemap.xml` (данные из Prisma). `robots.txt` указывает на новую ссылку.
+- Папки: `layout/` переименована в `layouts/`; `server/middlware/` → `server/middleware/`.
+- Ассеты: исправлены опечатки в именах (`beginner-*`, `bronze-logo-*`).
+- Логотипы перемещены в `public/images/` и подключаются через `/images/logo-1.png`.
+- Cron: исправлена тайм‑зона на `Europe/Kyiv`.
+- PWA: иконки `pwa-*.png` будут добавлены в `public/`.
+
+---
+
+## Предложения по авторизации и аутентификации (Этап 2)
+
+### Стек
+- `nuxt-auth-utils` для сессий/JWT, `@prisma/client` для пользователей/сессий, `bcrypt` для паролей, `zod` для валидации.
+- Google OAuth (OAuth 2.0), Metamask через `ethers.js` и SIWE (EIP‑4361).
+
+### Email/Пароль
+1. Регистрация: `POST /api/auth/register` → валидация (zod), хэш пароля (`bcrypt` 12–14), создание `User`, выдача `Session` (`token`, `expiresAt`).
+2. Логин: `POST /api/auth/login` → проверка пароля, ротация сессии (инвалидация старой), новая `Session` (TTL 7–30 дней).
+3. Выход: `POST /api/auth/logout` → удаление/инвалидация текущей `Session`.
+4. Сброс пароля: `POST /api/auth/forgot` (одноразовый токен + письмо), `POST /api/auth/reset` (смена пароля, ротация всех сессий).
+
+### Google OAuth
+1. `GET /api/auth/google/start` → редирект на Google (scopes: email, profile) с `state`/PKCE.
+2. `GET /api/auth/google/callback` → обмен кода на токен, получение профиля; поиск/создание `User` по email; создание `Session`.
+3. Безопасность: проверка `state`; чувствительные операции (смена email) — пароль/2FA.
+
+### Metamask (SIWE)
+1. `GET /api/auth/siwe/nonce` → выдача nonce, кратковременное хранение на сервере.
+2. `POST /api/auth/siwe/verify` → проверка подписи и nonce; привязка `walletAddress` к `User` (создание при отсутствии), выдача `Session`.
+
+### Сессии и куки
+- `Session` (Prisma): `id` (uuid), `userId`, `token` (JWT, уникальный), `expiresAt`, `createdAt`.
+- Токен в httpOnly secure cookie (`SameSite=Lax`, `Secure` в проде).
+- Серверное middleware: проверка JWT и валидности `Session` на защищённых маршрутах.
+
+### Безопасность
+- Пароли: `bcrypt` + «перец» (server secret), минимальная длина 8–10.
+- Rate limiting: логин/регистрация/forgot — 5–10 попыток/мин по IP и email/кошельку.
+- CSRF: SameSite или отдельные CSRF‑токены для форм/POST.
+- 2FA (опционально на 2–3 этапе): TOTP через `otplib` для чувствительных действий.
+
+### UI и бот
+- UI: страницы `Login`, `Register`, кнопки Google/Metamask, компонент привязки кошелька.
+- Бот (Twilio): `/start` отдаёт magic‑link/код; `/login` принимает код и создаёт сессию, связывая WhatsApp ↔ аккаунт.
+
+---
+
+## Темизация и переменные
+- Цвета в компонентах переведены на CSS‑переменные Vuetify: `rgb(var(--v-theme-primary))`, `rgb(var(--v-theme-secondary))`, `rgb(var(--v-theme-accent))` и т.д.
+- Рекомендуется избегать жёстких HEX‑значений в стилях. Используйте тему через переменные или пропсы Vuetify (`color="primary"`).
+- Добавление/изменение цветов — в `nuxt.config.ts → vuetify.vuetifyOptions.theme.themes.travelFi.colors`.

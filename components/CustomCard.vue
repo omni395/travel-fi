@@ -11,8 +11,8 @@ defineProps({
 <style scoped>
 .travel-card {
   border-radius: 12px;
-  border-left: 4px solid #FF5722; /* accent */
-  background: linear-gradient(135deg, #0288D1 0%, #26A69A 100%);
+  border-left: 4px solid rgb(var(--v-theme-accent));
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-secondary)) 100%);
   color: #FFFFFF;
   transition: transform 0.3s ease;
 }

@@ -12,8 +12,8 @@ defineProps({
 </script>
 <style scoped>
 .travel-avatar {
-  background-color: #0288D1; /* primary */
-  border: 2px solid #FF5722; /* accent */
+  background-color: rgb(var(--v-theme-primary));
+  border: 2px solid rgb(var(--v-theme-accent));
   transition: transform 0.3s ease;
 }
 .travel-avatar:hover {

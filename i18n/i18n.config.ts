@@ -1,19 +1,31 @@
 import { createI18n } from 'vue-i18n';
-import en from './locales/en.json';
-import ru from './locales/ru.json';
-import es from './locales/es.json';
-import zh from './locales/zh.json';
 
-const messages = {
-  en,
-  ru,
-  es,
-  zh,
-};
+// Asynchronously load JSON files
+async function loadMessages() {
+  const en = await import('./locales/en.json');
+  const ru = await import('./locales/ru.json');
+  const es = await import('./locales/es.json');
+  const zh = await import('./locales/zh.json');
 
-export const i18n = createI18n({
-  legacy: false,
-  locale: navigator.language.split('-')[0] || 'en',
-  fallbackLocale: 'en',
-  messages,
+  return {
+    en: en.default,
+    ru: ru.default,
+    es: es.default,
+    zh: zh.default,
+  };
+}
+
+export default defineI18nConfig(async () => {
+  const messages = await loadMessages();
+
+  if (!messages.en || !messages.en.slogan) {
+    //
+  }
+
+  return {
+    legacy: false,
+    locale: 'en',
+    fallbackLocale: 'en',
+    messages,
+  };
 });

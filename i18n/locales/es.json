@@ -1,6 +1,7 @@
 {
   "slogan": "¡Encuentra Wi-Fi y eSIM, mantente conectado en cualquier lugar!",
   "hero_subtitle": "Descubre Wi-Fi gratuito, eSIM asequibles y conexiones seguras en todo el mundo.",
+  "install_app": "Instalar aplicación",
   "get_started": "Comenzar",
   "offline_message": "Estás sin conexión. Algunas funciones pueden estar limitadas.",
   "nav": {
@@ -36,9 +37,40 @@
     "rank": "Rango",
     "user": "Usuario",
     "view": "Ver",
-    "invite": "Invitar"
+    "invite": "Invitar",
+    "meta_description": "Administra tus puntos TRAVEL, revisa notificaciones y verifica tu rango en la tabla de clasificación."
   },
   "notifications": {
-    "wifi_nearby": "¡Nuevo Wi-Fi cerca!"
+    "wifi_nearby": "¡Nuevo Wi-Fi cerca!",
+    "welcome": "¡Bienvenido a TravelFi!",
+    "first_login": "¡Felicidades por tu primer inicio de sesión!"
+  },
+  "auth": {
+    "forgotTitle": "Restablecer contraseña",
+    "email": "Correo electrónico",
+    "forgotBtn": "Enviar enlace de restablecimiento",
+    "backToLogin": "Volver al inicio de sesión",
+    "forgotSent": "Enlace de restablecimiento de contraseña enviado a tu correo.",
+    "errorForgot": "No se pudo enviar el enlace de restablecimiento. Intenta de nuevo.",
+    "loginTitle": "Iniciar sesión en TravelFi",
+    "password": "Contraseña",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "loginBtn": "Iniciar sesión",
+    "or": "o",
+    "noAccount": "¿No tienes una cuenta?",
+    "registerLink": "Registrarse",
+    "successLogin": "¡Inicio de sesión exitoso!",
+    "errorLogin": "Error al iniciar sesión. Verifica tus credenciales.",
+    "errorOAuth": "Error al autenticar con OAuth.",
+    "metamaskMissing": "Metamask no está instalado.",
+    "errorSIWE": "Error al autenticar con Metamask.",
+    "registerTitle": "Crear una cuenta",
+    "passwordRepeat": "Repetir contraseña",
+    "registerBtn": "Registrarse",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar sesión",
+    "passwordsMismatch": "Las contraseñas no coinciden.",
+    "successRegister": "¡Registrado exitosamente! ¡Bienvenido a TravelFi!",
+    "errorRegister": "Error al registrarse. Intenta de nuevo."
   }
 }

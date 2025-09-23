@@ -1,4 +1,4 @@
-import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -11,12 +11,13 @@ export default defineNuxtConfig({
     '@prisma/nuxt',
     'vuetify-nuxt-module',
     'nuxt-toast',
-    // '@nuxtjs/seo', // Временно убрано, чтобы исключить конфликт
-    //'@nuxtjs/sitemap',
+    '@nuxtjs/seo',
     '@vite-pwa/nuxt',
     '@nuxtjs/leaflet',
-    //'@nuxtjs/google-gtag',
+    'nuxt-cron',
+    '@vueuse/nuxt',
   ],
+  
   vuetify: {
     moduleOptions: {},
     vuetifyOptions: {
@@ -33,61 +34,136 @@ export default defineNuxtConfig({
               warning: '#FFA000',
               info: '#0288D1',
               success: '#388E3C',
-              background: '#E1F5FE',
-              btnBackground: '#4FC3F7',
-              mainText: '#01579B',
-              hoverText: '#0277BD'
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        },
+      },
+    },
   },
-  css: [
-    //'~/assets/css/main.css',
-    'vuetify/styles',
-    '@mdi/font/css/materialdesignicons.css'
-  ],
+
   i18n: {
     vueI18n: './i18n.config.ts',
-    bundle: {
-      optimizeTranslationDirective: false
-    }
+    locales: [
+      { code: 'en', iso: 'en-US', file: 'en.json', name: 'Eng' },
+      { code: 'ru', iso: 'ru-RU', file: 'ru.json', name: 'Рус' },
+      { code: 'es', iso: 'es-ES', file: 'es.json', name: 'Esp' },
+      { code: 'zh', iso: 'zh-CN', file: 'zh.json', name: '中文' },
+    ],
+    defaultLocale: 'en',
+    detectBrowserLanguage: {
+      useCookie: true, // Включаем куки для сохранения выбора
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+      alwaysRedirect: false,
+    },
+    skipSettingLocaleOnNavigate: true,
+  },
+
+  hooks: {
+    'i18n:beforeLocaleSwitch': ({ oldLocale, newLocale, initialSetup }) => {
+      console.log(`i18n: Switching locale from ${oldLocale} to ${newLocale}, initialSetup: ${initialSetup}`);
+    },
+    'i18n:localeSwitched': ({ oldLocale, newLocale }) => {
+      console.log(`i18n: Locale switched to ${newLocale} from ${oldLocale}`);
+    },
+  },
+
+  vite: {
+    build: {
+      minify: false, // Отключаем минификацию для скорости
+      rollupOptions: {
+        maxParallelFileOps: 2, // Ограничиваем параллельные операции
+      },
+    },
+    server: {
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost',
+      },
+    },
+  },
+
+  site: {
+    url: 'https://travel-fi.com',
+    name: 'TravelFi',
+    description: 'Find Wi-Fi & eSIM, stay connected anywhere!',
+    defaultLocale: 'en',
+    identity: {
+      type: 'Organization',
+    },
+    twitter: '@travelfi',
   },
   sitemap: {
+    sitemapName: 'sitemap.xml',
     siteUrl: 'https://travel-fi.com',
-    sources: [
-      async () => {
-        const { $prisma } = useNuxtApp()
-        const wifi = await $prisma.wifiPoint.findMany({ select: { id: true } })
-        const esim = await $prisma.esimTariff.findMany({ select: { id: true } })
-        return [
-          ...wifi.map(w => ({ loc: `/wifi/${w.id}`, changefreq: 'weekly', priority: 0.6 })),
-          ...esim.map(e => ({ loc: `/esim/${e.id}`, changefreq: 'weekly', priority: 0.6 }))
-        ]
-      }
-    ],
-    autoI18n: true
   },
   robots: {
     disallow: ['/admin'],
-    allow: ['/', '/wifi', '/esim', '/leaderboard']
+    allow: ['/', '/wifi', '/esim', '/leaderboard'],
+    sitemap: 'https://travel-fi.com/api/sitemap.xml',
   },
   ogImage: {
-    defaults: { title: 'TravelFi', description: 'Find Wi-Fi & eSIM, stay connected anywhere!' }
+    defaults: {
+      title: 'TravelFi',
+      description: 'Find Wi-Fi & eSIM, stay connected anywhere!',
+      component: 'OgImage',
+      width: 1200,
+      height: 630,
+    },
+    fonts: ['Inter:400', 'Inter:500', 'Inter:600'],
+  },
+  schemaOrg: {
+    identity: 'Organization',
+    website: 'https://travel-fi.com',
+    logo: 'https://travel-fi.com/logo.png',
   },
   googleGtag: {
-    id: 'G-XXXXXXXXXX'
+    id: 'G-XXXXXXXXXX',
   },
   pwa: {
+    registerType: 'autoUpdate',
+    includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
     manifest: {
       name: 'TravelFi',
       short_name: 'TravelFi',
       description: 'Wi-Fi, eSIM, and secure travel',
-      theme_color: '#0288D1'
-    }
+      theme_color: '#0288D1',
+      background_color: '#ffffff',
+      display: 'standalone',
+      icons: [
+        {
+          src: 'pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa-maskable-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+        {
+          src: 'pwa-maskable-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+    },
+    workbox: {
+      navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg}'],
+    },
+    client: {
+      installPrompt: true,
+    },
   },
   prisma: {
-    autoSetupPrisma: true
-  }
-})
+    autoSetupPrisma: true,
+  },
+});

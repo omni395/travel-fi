@@ -1,0 +1,125 @@
+<template>
+  <v-container class="py-12">
+    <v-row justify="center">
+      <v-col cols="12" sm="8" md="6" lg="4">
+        <CustomCard>
+          <v-card-title class="text-h5 text-center">{{ t('auth.loginTitle') }}</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="onSubmit" :disabled="isLoading">
+              <v-text-field
+                v-model="email"
+                type="email"
+                :label="t('auth.email')"
+                prepend-inner-icon="mdi-email"
+                variant="outlined"
+                color="primary"
+                class="mb-4"
+                required
+              />
+              <v-text-field
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                :label="t('auth.password')"
+                prepend-inner-icon="mdi-lock"
+                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                @click:append-inner="showPassword = !showPassword"
+                variant="outlined"
+                color="primary"
+                class="mb-2"
+                required
+              />
+              <div class="d-flex justify-end mb-4">
+                <NuxtLink to="/auth/forgot" class="text-white">{{ t('auth.forgot') }}</NuxtLink>
+              </div>
+              <CustomButton type="submit" color="primary" :loading="isLoading" block>
+                {{ t('auth.loginBtn') }}
+              </CustomButton>
+            </v-form>
+            <v-divider class="my-6" />
+            <div class="text-center mb-4">{{ t('auth.or') }}</div>
+            <div class="d-flex flex-column gap-3">
+              <CustomButton color="secondary" @click="loginWithGoogle" :loading="isLoading" block>
+                <v-icon start>mdi-google</v-icon>
+                Google
+              </CustomButton>
+              <CustomButton color="accent" @click="loginWithMetamask" :loading="isLoading" block>
+                <v-icon start>mdi-ethereum</v-icon>
+                Metamask
+              </CustomButton>
+            </div>
+          </v-card-text>
+          <v-card-actions class="justify-center">
+            <span>{{ t('auth.noAccount') }}</span>
+            <NuxtLink to="/auth/register" class="ml-2 text-white">{{ t('auth.registerLink') }}</NuxtLink>
+          </v-card-actions>
+        </CustomCard>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-overlay v-model="isLoading" scrim color="#0288D1" :opacity="0.1" />
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const isLoading = ref(false)
+
+const router = useRouter()
+const { t } = useI18n()
+const { $toast } = useNuxtApp()
+
+async function onSubmit() {
+  if (!email.value || !password.value) return
+  isLoading.value = true
+  try {
+    const res = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: { email: email.value, password: password.value }
+    })
+    $toast?.success(t('auth.successLogin'))
+    await router.push('/dashboard')
+  } catch (e) {
+    $toast?.error(t('auth.errorLogin'))
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function loginWithGoogle() {
+  try {
+    window.location.href = '/api/auth/google/start'
+  } catch (e) {
+    $toast?.error(t('auth.errorOAuth'))
+  }
+}
+
+async function loginWithMetamask() {
+  try {
+    if (!window.ethereum) {
+      $toast?.error(t('auth.metamaskMissing'))
+      return
+    }
+    isLoading.value = true
+    const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
+    const { nonce } = await $fetch('/api/auth/siwe/nonce')
+    const message = `Sign-in with Ethereum to TravelFi.\n\nAddress: ${account}\nNonce: ${nonce}`
+    const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, account] })
+    await $fetch('/api/auth/siwe/verify', { method: 'POST', body: { message, signature } })
+    $toast?.success(t('auth.successLogin'))
+    await router.push('/dashboard')
+  } catch (e) {
+    $toast?.error(t('auth.errorSIWE'))
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>
+
+<style scoped>
+</style>
+
+

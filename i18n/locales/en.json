@@ -1,6 +1,7 @@
 {
   "slogan": "Find Wi-Fi & eSIM, stay connected anywhere!",
   "hero_subtitle": "Discover free Wi-Fi, affordable eSIMs, and secure connections worldwide.",
+  "install_app": "Install App",
   "get_started": "Get Started",
   "offline_message": "You are offline. Some features may be limited.",
   "nav": {
@@ -36,9 +37,40 @@
     "rank": "Rank",
     "user": "User",
     "view": "View",
-    "invite": "Invite"
+    "invite": "Invite",
+    "meta_description": "Manage your TRAVEL points, view notifications, and check your leaderboard rank."
   },
   "notifications": {
-    "wifi_nearby": "New Wi-Fi nearby!"
+    "wifi_nearby": "New Wi-Fi nearby!",
+    "welcome": "Welcome to TravelFi!",
+    "first_login": "Congratulations on your first login!"
+  },
+  "auth": {
+    "forgotTitle": "Reset Password",
+    "email": "Email",
+    "forgotBtn": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "forgotSent": "Password reset link sent to your email.",
+    "errorForgot": "Failed to send reset link. Please try again.",
+    "loginTitle": "Login to TravelFi",
+    "password": "Password",
+    "forgot": "Forgot Password?",
+    "loginBtn": "Login",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign Up",
+    "successLogin": "Successfully logged in!",
+    "errorLogin": "Login failed. Please check your credentials.",
+    "errorOAuth": "Failed to authenticate with OAuth.",
+    "metamaskMissing": "Metamask is not installed.",
+    "errorSIWE": "Failed to authenticate with Metamask.",
+    "registerTitle": "Create an Account",
+    "passwordRepeat": "Repeat Password",
+    "registerBtn": "Sign Up",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Login",
+    "passwordsMismatch": "Passwords do not match.",
+    "successRegister": "Successfully registered! Welcome to TravelFi!",
+    "errorRegister": "Registration failed. Please try again."
   }
 }

@@ -1,6 +1,7 @@
 {
   "slogan": "找到Wi-Fi和eSIM，随时随地保持连接！",
   "hero_subtitle": "发现免费Wi-Fi、实惠的eSIM和全球安全连接。",
+  "install_app": "安装应用",
   "get_started": "开始使用",
   "offline_message": "您已离线，某些功能可能会受限。",
   "nav": {
@@ -36,9 +37,40 @@
     "rank": "排名",
     "user": "用户",
     "view": "查看",
-    "invite": "邀请"
+    "invite": "邀请",
+    "meta_description": "管理您的TRAVEL积分，查看通知并检查您在排行榜中的排名。"
   },
   "notifications": {
-    "wifi_nearby": "附近有新的Wi-Fi！"
+    "wifi_nearby": "附近有新的Wi-Fi！",
+    "welcome": "欢迎体验TravelFi！",
+    "first_login": "祝贺您首次登录！"
+  },
+  "auth": {
+    "forgotTitle": "重置密码",
+    "email": "电子邮件",
+    "forgotBtn": "发送重置链接",
+    "backToLogin": "返回登录",
+    "forgotSent": "密码重置链接已发送至您的邮箱。",
+    "errorForgot": "无法发送重置链接，请重试。",
+    "loginTitle": "登录TravelFi",
+    "password": "密码",
+    "forgot": "忘记密码？",
+    "loginBtn": "登录",
+    "or": "或",
+    "noAccount": "还没有账户？",
+    "registerLink": "注册",
+    "successLogin": "登录成功！",
+    "errorLogin": "登录失败，请检查您的凭据。",
+    "errorOAuth": "OAuth认证失败。",
+    "metamaskMissing": "未安装Metamask。",
+    "errorSIWE": "Metamask认证失败。",
+    "registerTitle": "创建账户",
+    "passwordRepeat": "重复密码",
+    "registerBtn": "注册",
+    "haveAccount": "已有账户？",
+    "loginLink": "登录",
+    "passwordsMismatch": "密码不匹配。",
+    "successRegister": "注册成功！欢迎体验TravelFi！",
+    "errorRegister": "注册失败，请重试。"
   }
 }

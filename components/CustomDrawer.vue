@@ -14,14 +14,14 @@ defineProps({
 </script>
 <style scoped>
 .travel-drawer {
-  background: #26A69A; /* secondary */
+  background: rgb(var(--v-theme-secondary));
   color: #FFFFFF;
   transition: width 0.3s ease;
 }
 .travel-drawer .v-list-item {
-  color: #0288D1; /* primary */
+  color: rgb(var(--v-theme-primary));
 }
 .travel-drawer .v-list-item:hover {
-  background: #FF5722; /* accent */
+  background: rgb(var(--v-theme-accent));
 }
 </style>
