@@ -10,7 +10,9 @@
     "about": "关于我们",
     "login": "登录",
     "signup": "注册",
-    "admin": "管理员"
+    "dashboard": "仪表板",
+    "profile": "个人资料",
+    "logout": "退出"
   },
   "footer": {
     "copyright": "版权",
@@ -71,6 +73,29 @@
     "loginLink": "登录",
     "passwordsMismatch": "密码不匹配。",
     "successRegister": "注册成功！欢迎体验TravelFi！",
-    "errorRegister": "注册失败，请重试。"
+    "errorRegister": "注册失败，请重试。",
+    "loginDesc": "登录您的 TravelFi 账户以访问仪表板和功能。",
+    "google": "使用 Google 继续",
+    "metamask": "使用 Metamask 继续"
+  },
+  "vuetify": {
+    "input": {
+      "appendAction": "添加操作"
+    },
+    "dataFooter": {
+      "itemsPerPageText": "每页项目",
+      "itemsPerPageAll": "全部",
+      "pageText": "{0}-{1} 共 {2}",
+      "firstPage": "第一页",
+      "lastPage": "最后一页",
+      "prevPage": "上一页",
+      "nextPage": "下一页"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "root": "分页导航"
+      }
+    },
+    "open": "打开"
   }
 }

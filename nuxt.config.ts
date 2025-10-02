@@ -17,9 +17,17 @@ export default defineNuxtConfig({
     'nuxt-cron',
     '@vueuse/nuxt',
   ],
-  
+  runtimeConfig: {
+    secret: process.env.NUXT_SECRET, // Added for HMAC/JWT
+    oauth: {
+      google: {
+        clientId: process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID,
+        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET,
+        redirectURL: process.env.NUXT_OAUTH_GOOGLE_REDIRECT_URL || '/api/auth/google',
+      },
+    },
+  },
   vuetify: {
-    moduleOptions: {},
     vuetifyOptions: {
       theme: {
         defaultTheme: 'travelFi',
@@ -40,7 +48,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   i18n: {
     vueI18n: './i18n.config.ts',
     locales: [
@@ -58,17 +65,17 @@ export default defineNuxtConfig({
     },
     skipSettingLocaleOnNavigate: true,
   },
-
-  hooks: {
-    'i18n:beforeLocaleSwitch': ({ oldLocale, newLocale, initialSetup }) => {
-      console.log(`i18n: Switching locale from ${oldLocale} to ${newLocale}, initialSetup: ${initialSetup}`);
-    },
-    'i18n:localeSwitched': ({ oldLocale, newLocale }) => {
-      console.log(`i18n: Locale switched to ${newLocale} from ${oldLocale}`);
-    },
+  experimental: {
+    payloadExtraction: false  // Disable payload for better SSR in Nuxt 4
   },
-
   vite: {
+    vue: {
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('v-') || tag === 'vuetify' || tag.startsWith('Custom'), // Расширено для Vuetify/Custom компонентов
+        },
+      },
+    },
     build: {
       minify: false, // Отключаем минификацию для скорости
       rollupOptions: {
@@ -82,7 +89,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   site: {
     url: 'https://travel-fi.com',
     name: 'TravelFi',
@@ -93,10 +99,8 @@ export default defineNuxtConfig({
     },
     twitter: '@travelfi',
   },
-  sitemap: {
-    sitemapName: 'sitemap.xml',
-    siteUrl: 'https://travel-fi.com',
-  },
+  // sitemap auto-generated from site.url
+  // sitemap: {},
   robots: {
     disallow: ['/admin'],
     allow: ['/', '/wifi', '/esim', '/leaderboard'],
@@ -104,8 +108,6 @@ export default defineNuxtConfig({
   },
   ogImage: {
     defaults: {
-      title: 'TravelFi',
-      description: 'Find Wi-Fi & eSIM, stay connected anywhere!',
       component: 'OgImage',
       width: 1200,
       height: 630,
@@ -114,12 +116,8 @@ export default defineNuxtConfig({
   },
   schemaOrg: {
     identity: 'Organization',
-    website: 'https://travel-fi.com',
-    logo: 'https://travel-fi.com/logo.png',
   },
-  googleGtag: {
-    id: 'G-XXXXXXXXXX',
-  },
+
   pwa: {
     registerType: 'autoUpdate',
     includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
@@ -128,7 +126,7 @@ export default defineNuxtConfig({
       short_name: 'TravelFi',
       description: 'Wi-Fi, eSIM, and secure travel',
       theme_color: '#0288D1',
-      background_color: '#ffffff',
+      background_color: '#f8f8f8',
       display: 'standalone',
       icons: [
         {
@@ -163,6 +161,11 @@ export default defineNuxtConfig({
       installPrompt: true,
     },
   },
+  css: [
+    '~/assets/css/main.css',
+    'vuetify/styles',
+    '@mdi/font/css/materialdesignicons.css'
+  ],
   prisma: {
     autoSetupPrisma: true,
   },

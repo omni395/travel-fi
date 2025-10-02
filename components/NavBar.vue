@@ -1,113 +1,143 @@
 <template>
   <v-app-bar color="primary" elevation="2" fixed>
-    <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer" />
-    <v-toolbar-title>
-      <NuxtLink to="/" class="text-white">TravelFi</NuxtLink>
-    </v-toolbar-title>
+    <v-app-bar-nav-icon @click="drawer = !drawer" />
+
+    <v-btn to="/" variant="text" color="transparent" class="logo-link">
+      <v-toolbar-title class="logo-section">
+        <v-img
+          src="/assets/images/logo-1.png"
+          alt="TravelFi Logo"
+          max-height="32"
+          max-width="32"
+          class="logo-image"
+        />
+        <span class="logo-text">TravelFi</span>
+      </v-toolbar-title>
+    </v-btn>
+
     <v-spacer />
-    <v-toolbar-items v-if="!isMobile">
-      <v-btn v-for="item in navItems" :key="item.title" :to="item.to" variant="text" color="white">
-        {{ item.title }}
-      </v-btn>
-      <v-btn v-if="isAdmin" to="/admin" variant="text" color="white">
-        {{ t('nav.admin') }}
-      </v-btn>
-    </v-toolbar-items>
-    <CustomButton :to="'/auth/login'" color="accent" variant="elevated" class="ml-4">
+
+    <v-btn v-if="isAuthenticated" @click="handleLogout" color="error" variant="text">
+      {{ t('nav.logout') }}
+    </v-btn>
+
+    <v-btn v-else @click="handleLogin" color="accent" variant="text">
       {{ t('nav.login') }}
-    </CustomButton>
-    <CustomButton :to="'/auth/signup'" color="accent" variant="elevated" class="ml-2">
-      {{ t('nav.signup') }}
-    </CustomButton>
-    <v-menu>
-      <template v-slot:activator="{ props }">
-        <v-btn
-          color="white"
-          v-bind="props"
-          class="language-menu-btn"
-          data-test="language-menu-btn"
-        >
-          {{ currentLocaleName || 'Select Language' }}
-          <v-icon end>mdi-menu-down</v-icon>
-        </v-btn>
-      </template>
-      <v-list bg-color="secondary">
-        <v-list-item
-          v-for="locale in availableLocales"
-          :key="locale.code"
-          :value="locale.code"
-          @click="changeLocale(locale.code)"
-          data-test="language-item"
-        >
-          <v-list-item-title color="white">{{ locale.name }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-navigation-drawer v-model="drawer" temporary rail-width="56" v-if="isMobile">
-      <v-list>
-        <v-list-item v-for="item in navItems" :key="item.title" :to="item.to" @click="drawer = false">
-          {{ item.title }}
-        </v-list-item>
-        <v-list-item v-if="isAdmin" to="/admin" @click="drawer = false">
-          {{ t('nav.admin') }}
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+    </v-btn>
   </v-app-bar>
+
+  <v-navigation-drawer v-model="drawer" temporary location="left" v-if="isMobile" @click:outside="drawer = false">
+    <v-list>
+      <v-list-item to="/wifi" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.wifi') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item to="/esim" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.esim') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item to="/about" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.about') }}</v-list-item-title>
+      </v-list-item>
+
+      <v-list-item v-if="isAuthenticated" to="/dashboard" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.dashboard') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="isAuthenticated" to="/profile" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.profile') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="isAuthenticated && isAdmin" to="/admin" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.admin') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="isAuthenticated" @click="handleLogout; drawer = false">
+        <v-list-item-title>{{ t('nav.logout') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="!isAuthenticated" to="/auth/login" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.login') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="!isAuthenticated" to="/auth/signup" @click="drawer = false">
+        <v-list-item-title>{{ t('nav.signup') }}</v-list-item-title>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
-<script setup>
-import { useI18n } from 'vue-i18n';
-import { useCookie, useRoute } from '#app';
-import { computed, ref } from 'vue';
-import { useMediaQuery } from '@vueuse/core';
-import CustomButton from '@/components/CustomButton.vue';
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from '#app'
+import { useUser } from '~/composables/useUser'
+import { useI18n } from 'vue-i18n'
+import { useMediaQuery } from '@vueuse/core'
 
-const { t, setLocale, locales, locale } = useI18n();
-const route = useRoute();
-const isMobile = useMediaQuery('(max-width: 600px)');
-const drawer = ref(false);
+const router = useRouter()
+const drawer = ref(false)
+const { t } = useI18n()
+const { isAuthenticated, isAdmin, logout } = useUser()
+const isMobile = useMediaQuery('(max-width: 600px)')
 
-const isAdmin = ref(false);
+const handleLogout = async () => {
+  console.log('Logout button clicked - test!')
+  await logout()
+}
 
-const navItems = [
-  { title: t('nav.wifi'), to: '/wifi' },
-  { title: t('nav.esim'), to: '/esim' },
-  { title: t('nav.about'), to: '/about' },
-];
-
-const availableLocales = computed(() => {
-  const locs = locales.value && Array.isArray(locales.value) ? locales.value : [
-    { code: 'en', name: 'Eng' },
-    { code: 'ru', name: 'Рус' },
-    { code: 'es', name: 'Esp' },
-    { code: 'zh', name: '中文' },
-  ];
-  return locs;
-});
-
-const currentLocaleName = computed(() => {
-  const current = availableLocales.value.find(l => l.code === locale.value);
-  const name = current ? current.name : 'Select Language';
-  return name;
-});
-
-const changeLocale = async (localeCode) => {
-  try {
-    await setLocale(localeCode);
-    useCookie('i18n_redirected').value = localeCode;
-  } catch (error) {
-  }
-};
+const handleLogin = () => {
+  router.push('/auth/login')
+}
 </script>
 
 <style scoped>
 .text-white {
   color: white !important;
 }
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-link {
+  text-decoration: none !important;
+  min-width: auto;
+  padding: 0 !important;
+}
+
+.logo-link:hover .logo-section {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.logo-image {
+  border-radius: 4px;
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.logo-fallback {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
 .language-menu-btn {
   text-transform: none;
   min-width: 120px;
   z-index: 1000;
+}
+
+.mobile-language-btn {
+  min-width: auto;
+  padding: 8px;
+}
+
+.user-menu-btn {
+  text-transform: none;
+  min-width: auto;
+}
+
+.v-btn {
+  z-index: 1000 !important;
 }
 </style>

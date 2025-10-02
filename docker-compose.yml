@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
       #- node_modules:/app/node_modules
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && NODE_OPTIONS=\"--max-old-space-size=1024\" npm run dev -- --host 0.0.0.0"
     #command: sh -c "whoami && id -u && id -g"
     environment:
       - NODE_ENV=development
@@ -22,11 +22,13 @@ services:
       - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - CHOKIDAR_USEPOLLING=true
+      - NUXT_HOST=0.0.0.0
+      - NODE_OPTIONS=--max-old-space-size=1024
     depends_on:
       - postgres
       - redis
-    cpus: "0.5"
-    mem_limit: "1g"
+    #cpus: "1"
+    #mem_limit: "2g"
     env_file:
       - ".env"
     user: "${UID}:${GID}"
@@ -41,8 +43,8 @@ services:
       POSTGRES_DB: travel_fi
     ports:
       - "5432:5432"
-    cpus: "0.5"
-    mem_limit: "128m"
+    #cpus: "0.5"
+    #mem_limit: "128m"
 
   redis:
     image: redis:7-alpine
@@ -50,8 +52,8 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
-    cpus: "0.5"
-    mem_limit: "128m"
+    #cpus: "0.5"
+    #mem_limit: "128m"
 
 volumes:
   pg-data:

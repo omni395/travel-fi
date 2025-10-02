@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-alert v-if="!isOffline" type="error" color="error" class="mb-4">
       {{ t('offline_message') }}
     </v-alert>
@@ -8,7 +8,7 @@
       <v-col cols="12" md="6">
         <h1 class="text-primary text-h3 font-weight-bold">{{ t('slogan') }}</h1>
         <p class="text-secondary text-h6 mt-4">{{ t('hero_subtitle') }}</p>
-        <CustomButton to="/auth/signup" color="accent" variant="elevated" size="large" class="mt-4">
+        <CustomButton :to="$localePath('/auth/signup')" color="accent" variant="elevated" size="large" class="mt-4">
           {{ t('get_started') }}
         </CustomButton>
       </v-col>
@@ -32,18 +32,12 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const { t, locale, locales } = useI18n();
+const { t } = useI18n();
 const isOffline = useOnline();
 const isMobile = useMediaQuery('(max-width: 600px)');
-
-// Логи для проверки
-console.log('index.vue: Current i18n locale:', locale.value);
-console.log('index.vue: Available locales:', locales.value ? locales.value.map(l => l.code) : 'undefined');
-console.log('index.vue: Slogan translation:', t('slogan'));
-console.log('index.vue: Hero subtitle translation:', t('hero_subtitle'));
 
 const headData = computed(() => ({
   title: t('slogan'),
@@ -58,12 +52,12 @@ const headData = computed(() => ({
 
 useHead(headData);
 
-const features = [
+const features = computed(() => [
   { title: t('features.wifi'), icon: 'mdi-wifi', description: t('features.wifi_desc') },
   { title: t('features.esim'), icon: 'mdi-sim', description: t('features.esim_desc') },
   { title: t('features.security'), icon: 'mdi-shield', description: t('features.security_desc') },
-  { title: t('features.gamification'), icon: 'mdi-trophy', description: t('features.gamification_desc') },
-];
+  { title: t('features.rewards'), icon: 'mdi-trophy', description: t('features.rewards_desc') },
+]);
 </script>
 
 <style scoped>

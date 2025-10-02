@@ -10,7 +10,10 @@
     "about": "About",
     "login": "Login",
     "signup": "Sign Up",
-    "admin": "Admin"
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout"
   },
   "footer": {
     "copyright": "Copyright",
@@ -71,6 +74,29 @@
     "loginLink": "Login",
     "passwordsMismatch": "Passwords do not match.",
     "successRegister": "Successfully registered! Welcome to TravelFi!",
-    "errorRegister": "Registration failed. Please try again."
+    "errorRegister": "Registration failed. Please try again.",
+    "loginDesc": "Log in to your TravelFi account to access your dashboard and features.",
+    "google": "Continue with Google",
+    "metamask": "Continue with Metamask"
+  },
+  "vuetify": {
+    "input": {
+      "appendAction": "Append action"
+    },
+    "dataFooter": {
+      "itemsPerPageText": "Items per page",
+      "itemsPerPageAll": "All",
+      "pageText": "{0}-{1} of {2}",
+      "firstPage": "First",
+      "lastPage": "Last",
+      "prevPage": "Previous",
+      "nextPage": "Next"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "root": "Pagination navigation"
+      }
+    },
+    "open": "Open"
   }
 }

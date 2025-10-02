@@ -24,7 +24,7 @@ export default defineI18nConfig(async () => {
 
   return {
     legacy: false,
-    locale: 'en',
+    silentTranslationWarn: true, // Suppress i18n warnings in Nuxt 4
     fallbackLocale: 'en',
     messages,
   };

@@ -61,15 +61,13 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { computed } from 'vue'; // <--- Добавили импорт computed
-import CustomButton from '@/components/CustomButton.vue';
+import { ref, computed, onMounted } from 'vue';
 import CustomCard from '@/components/CustomCard.vue';
 import CustomChip from '@/components/CustomChip.vue';
 import CustomProgress from '@/components/CustomProgress.vue';
 import CustomTable from '@/components/CustomTable.vue';
-import CustomIcon from '@/components/CustomIcon.vue';
 
 const { t } = useI18n();
 const user = useState('user', () => ({
@@ -78,10 +76,7 @@ const user = useState('user', () => ({
   leaderboardRank: null,
 }));
 const notifications = ref([]);
-const referrals = ref([]);
-const isMobile = useMediaQuery('(max-width: 600px)');
 
-// Правильно: используем computed для динамических мета-тегов
 const headData = computed(() => ({
   title: t('dashboard.title'),
   meta: [
@@ -89,7 +84,6 @@ const headData = computed(() => ({
   ],
 }));
 
-// Правильно: передаем computed свойство в useHead
 useHead(headData);
 
 // Mock data fetch (replace with Prisma API calls when DB is ready)
@@ -98,9 +92,6 @@ onMounted(async () => {
   notifications.value = [
     { id: 1, content: t('notifications.welcome') },
     { id: 2, content: t('notifications.first_login') },
-  ];
-  referrals.value = [
-    { id: 1, email: 'friend1@example.com', status: 'Pending' },
   ];
 });
 </script>

@@ -10,6 +10,7 @@ generator client {
 model User {
   id                Int                  @id @default(autoincrement())
   email             String               @unique
+  name              String? // Full name
   password          String? // Hashed, null for OAuth/Web3
   walletAddress     String? // Metamask
   points            Int                  @default(0) // TRAVEL
@@ -17,7 +18,6 @@ model User {
   referralCode      String?              @unique
   pushEnabled       Boolean              @default(false)
   lastLocation      Json? // {lat, lng}
-  language          String               @default("en")
   travelPreferences Json? // {countries: ["Japan"], budget: 20}
   badges            String[]             @default([]) // ["Contributor Bronze"]
   leaderboardRank   Int? // Cached rank
@@ -35,23 +35,52 @@ model User {
   wifiPoints        WifiPoint[] // Добавлено
   securityReports   SecurityReport[] // Добавлено
   pushSubscriptions PushSubscription[] // Добавлено
+  confirmationToken String?
+  confirmedEmail   Boolean  @default(false)
+}
+
+model Feature {
+  id          Int           @id @default(autoincrement())
+  key         String        @unique // Ключ фичи (например, "unlimited_search")
+  name        String        // Человекочитаемое название
+  description String?       // Описание фичи
+  category    String?       // Категория (например, "search", "maps", "premium")
+  isActive    Boolean       @default(true) // Включена ли фича в системе
+  isPremium   Boolean       @default(false) // Премиум-фича?
+  userFeatures UserFeature[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("features")
 }
 
 model UserFeature {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  feature   String // "unlimited_search", "offline_map"
-  createdAt DateTime @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  featureId Int
+  feature   Feature   @relation(fields: [featureId], references: [id])
+  expiresAt DateTime? // Когда истекает доступ (null - бессрочно)
+  isActive  Boolean   @default(true) // Активен ли доступ
+  metadata  Json?     // Дополнительные метаданные о статусе фичи у пользователя
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, featureId])
+  @@map("user_features")
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  token     String   @unique
-  userAgent String?
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  token       String   @unique
+  userAgent   String?
+  ipAddress   String?  // Added for security logging
+  isActive    Boolean  @default(true)  // Added: Soft invalidation
+  expiresAt   DateTime // Removed @default(now()) — set in code (e.g., +7 days)
+  lastActivity DateTime @default(now()) @updatedAt  // Added default for existing rows
+  createdAt   DateTime @default(now())
 }
 
 model WifiPoint {

@@ -1,5 +1,6 @@
 import prisma from '~~/lib/prisma'
 import crypto from 'node:crypto'
+import EmailService from '~~/server/services/email.service'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ email: string }>(event)
@@ -11,11 +12,15 @@ export default defineEventHandler(async (event) => {
     // store one-time reset token in Session table (or separate table in future)
     const token = crypto.randomUUID()
     const expiresAt = new Date(Date.now() + 1000 * 60 * 30) // 30 min
-    await prisma.session.create({ data: { id: crypto.randomUUID(), userId: user.id, token, expiresAt } })
-    // TODO: send email with magic link `/auth/reset?token=...` (будет реализовано позже)
+    await prisma.session.create({ data: { userId: user.id, token, expiresAt } })
+
+    try {
+      await EmailService.sendPasswordResetEmail(email, token)
+    } catch (error) {
+      console.error('Failed to send password reset email:', error)
+      // Продолжаем, email будет отправлен позже
+    }
   }
   // Always return ok to avoid user enumeration
   return { ok: true }
 })
-
-

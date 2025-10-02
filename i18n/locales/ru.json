@@ -10,7 +10,9 @@
     "about": "О нас",
     "login": "Вход",
     "signup": "Регистрация",
-    "admin": "Админ"
+    "dashboard": "Панель",
+    "profile": "Профиль",
+    "logout": "Выход"
   },
   "footer": {
     "copyright": "Авторские права",
@@ -71,6 +73,29 @@
     "loginLink": "Войти",
     "passwordsMismatch": "Пароли не совпадают.",
     "successRegister": "Успешно зарегистрированы! Добро пожаловать в TravelFi!",
-    "errorRegister": "Ошибка регистрации. Попробуйте снова."
+    "errorRegister": "Ошибка регистрации. Попробуйте снова.",
+    "loginDesc": "Войдите в аккаунт TravelFi, чтобы получить доступ к панели и функциям.",
+    "google": "Продолжить с Google",
+    "metamask": "Продолжить с Metamask"
+  },
+  "vuetify": {
+    "input": {
+      "appendAction": "Добавить действие"
+    },
+    "dataFooter": {
+      "itemsPerPageText": "Записи на страницу",
+      "itemsPerPageAll": "Все",
+      "pageText": "{0}-{1} из {2}",
+      "firstPage": "Первая",
+      "lastPage": "Последняя",
+      "prevPage": "Предыдущая",
+      "nextPage": "Следующая"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "root": "Навигация по страницам"
+      }
+    },
+    "open": "Открыть"
   }
 }
