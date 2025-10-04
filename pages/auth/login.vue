@@ -60,17 +60,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const isLoading = ref(false)
+const csrfToken = ref('')
 
 const router = useRouter()
 const { t } = useI18n()
-const { $toast } = useNuxtApp()
+const toast = useToast()  // Из nuxt-toast, auto-imported
+
+onMounted(async () => {
+  try {
+    const { csrf } = await $fetch('/api/csrf')
+    csrfToken.value = csrf
+  } catch (e) {
+    console.error('CSRF fetch error:', e)
+  }
+})
 
 async function onSubmit() {
   if (!email.value || !password.value) return
@@ -78,12 +89,22 @@ async function onSubmit() {
   try {
     const res = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { email: email.value, password: password.value }
+      body: { email: email.value, password: password.value, _csrf: csrfToken.value }
     })
-    $toast?.success(t('auth.successLogin'))
+    toast.success({
+      title: t('auth.successLogin'),
+      message: t('auth.welcome'),
+      position: 'topRight',
+      timeout: 3000
+    })
     await router.push('/dashboard')
   } catch (e) {
-    $toast?.error(t('auth.errorLogin'))
+    toast.error({
+      title: t('auth.errorLogin'),
+      message: t('auth.loginFailed'),
+      position: 'topRight',
+      timeout: 3000
+    })
   } finally {
     isLoading.value = false
   }
@@ -91,16 +112,26 @@ async function onSubmit() {
 
 async function loginWithGoogle() {
   try {
-    window.location.href = '/api/auth/google/start'
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('error')) {
+      toast.error(t('auth.errorOAuth'))
+      return
+    }
+    window.location.href = '/api/auth/google'
   } catch (e) {
-    $toast?.error(t('auth.errorOAuth'))
+    toast.error(t('auth.errorOAuth'))
   }
 }
 
 async function loginWithMetamask() {
   try {
     if (!window.ethereum) {
-      $toast?.error(t('auth.metamaskMissing'))
+      toast.error({
+        title: t('auth.metamaskMissing'),
+        message: t('auth.metamaskMissing'),
+        position: 'topRight',
+        timeout: 3000
+      })
       return
     }
     isLoading.value = true
@@ -108,11 +139,23 @@ async function loginWithMetamask() {
     const { nonce } = await $fetch('/api/auth/siwe/nonce')
     const message = `Sign-in with Ethereum to TravelFi.\n\nAddress: ${account}\nNonce: ${nonce}`
     const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, account] })
-    await $fetch('/api/auth/siwe/verify', { method: 'POST', body: { message, signature } })
-    $toast?.success(t('auth.successLogin'))
+    await $fetch('/api/auth/siwe/verify', { method: 'POST', body: { message, signature, _csrf: csrfToken.value } })
+    toast.success({
+      title: t('auth.walletConnected'),
+      message: t('auth.walletConnected'),
+      position: 'topRight',
+      timeout: 3000
+    })
+    const { user: sessionUser } = await $fetch('/api/auth/session')
+    // если есть useUser, можно user.value = sessionUser
     await router.push('/dashboard')
   } catch (e) {
-    $toast?.error(t('auth.errorSIWE'))
+    toast.error({
+      title: t('auth.errorSIWE'),
+      message: t('auth.errorSIWE'),
+      position: 'topRight',
+      timeout: 3000
+    })
   } finally {
     isLoading.value = false
   }

@@ -22,11 +22,12 @@ services:
       - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - CHOKIDAR_USEPOLLING=true
+      - NUXT_HOST=0.0.0.0
     depends_on:
       - postgres
       - redis
-    cpus: "0.5"
-    mem_limit: "1g"
+    #cpus: "0.5"
+    #mem_limit: "1g"
     env_file:
       - ".env"
     user: "${UID}:${GID}"
@@ -41,8 +42,8 @@ services:
       POSTGRES_DB: travel_fi
     ports:
       - "5432:5432"
-    cpus: "0.5"
-    mem_limit: "128m"
+    #cpus: "0.5"
+    #mem_limit: "128m"
 
   redis:
     image: redis:7-alpine
@@ -50,8 +51,8 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
-    cpus: "0.5"
-    mem_limit: "128m"
+    #cpus: "0.5"
+    #mem_limit: "128m"
 
 volumes:
   pg-data:

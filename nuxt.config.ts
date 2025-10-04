@@ -44,9 +44,9 @@ export default defineNuxtConfig({
   i18n: {
     vueI18n: './i18n.config.ts',
     locales: [
-      { code: 'en', iso: 'en-US', file: 'en.json', name: 'Eng' },
-      { code: 'ru', iso: 'ru-RU', file: 'ru.json', name: 'Рус' },
-      { code: 'es', iso: 'es-ES', file: 'es.json', name: 'Esp' },
+      { code: 'en', iso: 'en-US', file: 'en.json', name: 'EN' },
+      { code: 'ru', iso: 'ru-RU', file: 'ru.json', name: 'ру' },
+      { code: 'es', iso: 'es-ES', file: 'es.json', name: 'ES' },
       { code: 'zh', iso: 'zh-CN', file: 'zh.json', name: '中文' },
     ],
     defaultLocale: 'en',
@@ -165,5 +165,20 @@ export default defineNuxtConfig({
   },
   prisma: {
     autoSetupPrisma: true,
+  },
+  runtimeConfig: {
+    public: {
+      oauth: {
+        google: {
+          clientId: process.env.NUXT_PUBLIC_OAUTH_GOOGLE_CLIENT_ID || ''
+        }
+      }
+    },
+    oauth: {
+      google: {
+        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET || '',
+        redirectURL: process.env.NUXT_OAUTH_GOOGLE_REDIRECT_URL || '/api/auth/google'
+      }
+    }
   },
 });

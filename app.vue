@@ -7,7 +7,12 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
+import { useCsrf } from '~/composables/useCsrf'
+
+onMounted(() => {
+  useCsrf()
+})
 
 useHead({
   title: 'TravelFi',

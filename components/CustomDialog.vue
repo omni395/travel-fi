@@ -4,12 +4,24 @@
     class="travel-dialog"
     v-bind="$attrs"
   >
-    <slot />
+    <v-card>
+      <slot />
+      <v-card-actions class="justify-end">
+        <CustomButton color="success" text-color="white" class="text-button" @click="$emit('save')">
+          {{ saveLabel }}
+        </CustomButton>
+        <CustomButton color="error" text-color="white" class="text-button" @click="$emit('cancel')">
+          {{ cancelLabel }}
+        </CustomButton>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 <script setup>
 defineProps({
-  color: { type: String, default: 'primary' } // primary (#0288D1)
+  color: { type: String, default: 'primary' },
+  saveLabel: { type: String, default: 'Сохранить' },
+  cancelLabel: { type: String, default: 'Отмена' }
 })
 </script>
 <style scoped>
@@ -19,10 +31,11 @@ defineProps({
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   transition: transform 0.3s ease;
 }
-.travel-dialog .v-card-actions {
-  background: rgb(var(--v-theme-primary));
+.white--text {
+  color: #fff !important;
 }
-.travel-dialog .v-btn {
-  color: #FFFFFF;
+.text-button {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 </style>

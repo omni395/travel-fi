@@ -1,20 +1,23 @@
+import { z } from 'zod'
 import prisma from '~~/lib/prisma'
 import crypto from 'node:crypto'
 
-export default defineEventHandler(async (event) => {
-  const body = await readBody<{ email: string }>(event)
-  if (!body?.email) throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
+const schema = z.object({
+  email: z.string().email().toLowerCase().trim()
+})
 
-  const email = body.email.toLowerCase().trim()
-  const user = await prisma.user.findUnique({ where: { email } })
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event)
+  const validated = schema.parse(body)
+
+  const user = await prisma.user.findUnique({ where: { email: validated.email } })
   if (user) {
-    // store one-time reset token in Session table (or separate table in future)
     const token = crypto.randomUUID()
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 30) // 30 min
-    await prisma.session.create({ data: { id: crypto.randomUUID(), userId: user.id, token, expiresAt } })
-    // TODO: send email with magic link `/auth/reset?token=...` (будет реализовано позже)
+    await prisma.session.create({ data: { userId: user.id, token } })
+    // TODO: send email with magic link `/auth/reset?token=${token}` (expires in cookie 30 min)
+    setCookie(event, '__reset-token', token, { httpOnly: true, maxAge: 1000 * 60 * 30 }) // 30 min for reset
   }
-  // Always return ok to avoid user enumeration
+  // Always return ok to avoid enumeration
   return { ok: true }
 })
 

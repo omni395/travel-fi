@@ -9,7 +9,9 @@ generator client {
 
 model User {
   id                Int                  @id @default(autoincrement())
-  email             String               @unique
+  email             String?              @unique
+  name              String? // Added for Google OAuth
+  confirmedEmail    Boolean              @default(false) // Added for OAuth
   password          String? // Hashed, null for OAuth/Web3
   walletAddress     String? // Metamask
   points            Int                  @default(0) // TRAVEL
@@ -46,11 +48,12 @@ model UserFeature {
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   token     String   @unique
   userAgent String?
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }
 

@@ -78,9 +78,9 @@ const navItems = [
 
 const availableLocales = computed(() => {
   const locs = locales.value && Array.isArray(locales.value) ? locales.value : [
-    { code: 'en', name: 'Eng' },
-    { code: 'ru', name: 'Рус' },
-    { code: 'es', name: 'Esp' },
+    { code: 'en', name: 'EN' },
+    { code: 'ru', name: 'РУ' },
+    { code: 'es', name: 'ES' },
     { code: 'zh', name: '中文' },
   ];
   return locs;
