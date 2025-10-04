@@ -1,5 +1,7 @@
+import { z } from 'zod'
 import prisma from '~~/lib/prisma'
 import bcrypt from 'bcrypt'
+<<<<<<< HEAD
 import { getCookie, getHeader } from 'h3'
 import * as crypto from 'crypto'
 import EmailService from '~~/server/services/email.service'
@@ -39,12 +41,28 @@ export default defineEventHandler(async (event) => {
   if (!body?.email || !body?.password || body.password.length < 8) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
   }
+=======
+import crypto from 'node:crypto'
+import { setCookie, createError, getCookie, deleteCookie } from 'h3'
 
-  const email = body.email.toLowerCase().trim()
-  const exists = await prisma.user.findUnique({ where: { email } })
+const config = useRuntimeConfig()
+const SECRET = config.secret || 'fallback-secret-change-in-prod'
+
+const schema = z.object({
+  email: z.string().email().toLowerCase().trim(),
+  password: z.string().min(8)
+})
+
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event)
+  const validated = schema.parse(body)
+>>>>>>> authentication
+
+  const exists = await prisma.user.findUnique({ where: { email: validated.email } })
   if (exists) throw createError({ statusCode: 409, statusMessage: 'User exists' })
 
   const saltRounds = 12
+<<<<<<< HEAD
   const passwordHash = await bcrypt.hash(body.password, saltRounds)
   const confirmationToken = crypto.randomUUID()
   const user = await prisma.user.create({ 
@@ -53,6 +71,26 @@ export default defineEventHandler(async (event) => {
       password: passwordHash, 
       confirmationToken 
     } as any 
+=======
+  const passwordHash = await bcrypt.hash(validated.password, saltRounds)
+  const user = await prisma.user.create({ data: { email: validated.email, password: passwordHash, confirmedEmail: false } })
+
+  // Rotate sessions
+  await prisma.session.deleteMany({ where: { userId: user.id } })
+
+  // JWT token
+  const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30
+  const data = `${user.id}:user:${exp}`
+  const signature = crypto.createHmac('sha256', SECRET).update(data).digest('base64url')
+  const token = `${data}.${signature}`
+
+  setCookie(event, 'auth-token', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 1000 * 60 * 60 * 24 * 30
+>>>>>>> authentication
   })
 
   try {

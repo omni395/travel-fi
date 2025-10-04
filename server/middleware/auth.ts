@@ -1,6 +1,10 @@
 import { defineEventHandler, getCookie, createError, getRequestHeader, getHeader, readBody, deleteCookie } from 'h3'
 import { useRuntimeConfig } from '#imports' // Добавлено для useRuntimeConfig
 import crypto from 'node:crypto'
+<<<<<<< HEAD
+=======
+import prisma from '~~/lib/prisma'
+>>>>>>> authentication
 
 const config = useRuntimeConfig()
 const SECRET = config.secret || 'fallback-secret-change-in-prod'
@@ -14,10 +18,17 @@ interface EndpointRule {
 // Конфигурация доступа к эндпоинтам
 const endpointAccess = {
   public: [
+<<<<<<< HEAD
     { method: '*', path: '/api/auth/*' }, // Расширено на all methods for auth API (login.post, register.post etc.)
     { method: '*', path: '/api/_auth/*' }, // Добавлено для nuxt-auth-utils session
     { method: 'POST', path: '/api/auth/login' },
     { method: 'POST', path: '/api/auth/register' },
+=======
+    { method: '*', path: '/api/auth/*' },
+    { method: '*', path: '/api/_auth/*' },
+    { method: 'POST', path: '/api/auth/login' },
+    { method: 'POST', path: '/api/auth/signup' },
+>>>>>>> authentication
     { method: 'POST', path: '/api/auth/forgot' },
     { method: 'POST', path: '/api/auth/siwe/verify' },
     { method: 'GET', path: '/api/wifi' },
@@ -38,7 +49,14 @@ const endpointAccess = {
     { method: 'GET', path: '/privacy' },
     { method: 'GET', path: '/terms' },
     { method: 'GET', path: '/api/csrf' },
+<<<<<<< HEAD
     { method: 'GET', path: '/auth/*' },  // Auto-covers login/register/forgot with/without locale
+=======
+    { method: 'GET', path: '/auth/*' },
+    { method: 'POST', path: '/api/user/check-email' },
+    { method: 'POST', path: '/api/user/check-wallet' },
+    { method: 'POST', path: '/api/user/upload-profile-picture' }
+>>>>>>> authentication
   ] as EndpointRule[],
   auth: [
     { method: '*', path: '/api/dashboard' },
@@ -51,6 +69,10 @@ const endpointAccess = {
     { method: '*', path: '/api/security' },
     { method: '*', path: '/dashboard' },
     { method: '*', path: '/profile' },
+<<<<<<< HEAD
+=======
+    { method: 'POST', path: '/api/user/update' },
+>>>>>>> authentication
   ] as EndpointRule[],
   admin: [
     { method: '*', path: '/api/admin' },
@@ -152,8 +174,13 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+<<<<<<< HEAD
   // CSRF check for POST in auth/admin (global for state-changing)
   if (method === 'POST' && (matchPathAndMethod(path, method, endpointAccess.auth) || matchPathAndMethod(path, method, endpointAccess.admin))) {
+=======
+  // CSRF check for all POST (global for state-changing)
+  if (method === 'POST') {
+>>>>>>> authentication
     const csrfCookie = getCookie(event, 'csrf-token')
     if (!csrfCookie) {
       throw createError({
@@ -232,10 +259,31 @@ export default defineEventHandler(async (event) => {
 
   // Проверяем эндпоинты для авторизованных пользователей
   if (matchPathAndMethod(path, method, endpointAccess.auth)) {
+<<<<<<< HEAD
+=======
+    const user = await prisma.user.findUnique({ where: { id: payload.userId } })
+    if (!user) {
+      throw createError({
+        statusCode: 401,
+        message: 'Unauthorized: User not found'
+      })
+    }
+    // Проверяем confirmedEmail только для API изменений (POST/PUT/DELETE)
+    if (path.startsWith('/api/') && method !== 'GET' && !user.confirmedEmail) {
+      throw createError({
+        statusCode: 403,
+        message: 'Verify email first'
+      })
+    }
+>>>>>>> authentication
     event.context.auth = {
       user: {
         id: userId,
         role,
+<<<<<<< HEAD
+=======
+        confirmedEmail: user.confirmedEmail
+>>>>>>> authentication
       }
     };
     return;

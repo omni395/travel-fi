@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div class="privacy-page">
     <v-container>
       <v-row justify="center">
@@ -27,3 +28,18 @@ const privacyContent = computed(() => {
   padding: 2rem 0;
 }
 </style>
+=======
+  <v-container>
+    <v-card-title class="text-h4">Privacy Policy</v-card-title>
+    <v-card-text>
+      <p>Privacy content here.</p>
+    </v-card-text>
+  </v-container>
+</template>
+
+<script setup>
+useHead({
+  title: 'Privacy - TravelFi'
+})
+</script>
+>>>>>>> authentication

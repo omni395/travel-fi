@@ -10,6 +10,11 @@
 Изучать используемые технологии, модули и библиотеки. Модули добавлять только в той момент, когда они действительно нужны, а те, которые используются действительно не могут быть реализованы с помощью уже имеющихся.
 Понимать архитектуру проекта, включая фронтенд, бэкенд, модели данных и потоки данных.
 Понимать рабочие процессы разработки, включая настройку, управление
+<<<<<<< HEAD
+=======
+Приложение работает через докер. команды запускать ТОЛЬКО через докер компос окружение.
+Быть в курсе соглашений и шаблонов, используемых в проекте, включая соглашения по именованию, структуру API, i18n, аутентификацию и безопасность, геймификацию и обработку ошибок.
+>>>>>>> authentication
 
 ## Project Overview
 Travel-Fi is a Nuxt 4 Progressive Web App (PWA) for travelers to find and add Wi-Fi hotspots and eSIM tariffs. It features gamification with TRAVEL points, badges (Beginner to Legend), leaderboards, referrals, and security checks using AI (Hugging Face). The app supports multilingual UI (en, ru, es, zh) and plans WhatsApp bot integration via Twilio. Core data models include User, WifiPoint, EsimTariff, Contribution, Review, SecurityReport, Feature, UserFeature, Session, AuditLog, managed via Prisma with PostgreSQL. Authentication uses nuxt-auth-utils with email/password, Google OAuth, and SIWE (Metamask). The app is Dockerized for development, with Redis for sessions/caching and cron jobs for maintenance (e.g., check-features.ts).

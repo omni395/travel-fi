@@ -78,9 +78,41 @@ const handleLogout = async () => {
   await logout()
 }
 
+<<<<<<< HEAD
 const handleLogin = () => {
   router.push('/auth/login')
 }
+=======
+const navItems = [
+  { title: t('nav.wifi'), to: '/wifi' },
+  { title: t('nav.esim'), to: '/esim' },
+  { title: t('nav.about'), to: '/about' },
+];
+
+const availableLocales = computed(() => {
+  const locs = locales.value && Array.isArray(locales.value) ? locales.value : [
+    { code: 'en', name: 'EN' },
+    { code: 'ru', name: 'РУ' },
+    { code: 'es', name: 'ES' },
+    { code: 'zh', name: '中文' },
+  ];
+  return locs;
+});
+
+const currentLocaleName = computed(() => {
+  const current = availableLocales.value.find(l => l.code === locale.value);
+  const name = current ? current.name : 'Select Language';
+  return name;
+});
+
+const changeLocale = async (localeCode) => {
+  try {
+    await setLocale(localeCode);
+    useCookie('i18n_redirected').value = localeCode;
+  } catch (error) {
+  }
+};
+>>>>>>> authentication
 </script>
 
 <style scoped>

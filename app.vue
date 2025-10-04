@@ -6,6 +6,7 @@
   </v-app>
 </template>
 
+<<<<<<< HEAD
 <script setup lang="ts">
 //import { useHead } from '@vueuse/head';
 import { provide, onMounted } from 'vue'
@@ -24,6 +25,15 @@ if (process.client) {
     await fetchUser()
   })
 }
+=======
+<script setup>
+import { onMounted } from 'vue'
+import { useCsrf } from '~/composables/useCsrf'
+
+onMounted(() => {
+  useCsrf()
+})
+>>>>>>> authentication
 
 useHead({
   title: 'TravelFi - Find Wi-Fi & eSIM, stay connected anywhere!',

@@ -9,8 +9,14 @@ generator client {
 
 model User {
   id                Int                  @id @default(autoincrement())
+<<<<<<< HEAD
   email             String               @unique
   name              String? // Full name
+=======
+  email             String?              @unique
+  name              String? // Added for Google OAuth
+  confirmedEmail    Boolean              @default(false) // Added for OAuth
+>>>>>>> authentication
   password          String? // Hashed, null for OAuth/Web3
   walletAddress     String? // Metamask
   points            Int                  @default(0) // TRAVEL
@@ -71,6 +77,7 @@ model UserFeature {
 }
 
 model Session {
+<<<<<<< HEAD
   id          Int      @id @default(autoincrement())
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
@@ -81,6 +88,15 @@ model Session {
   expiresAt   DateTime // Removed @default(now()) — set in code (e.g., +7 days)
   lastActivity DateTime @default(now()) @updatedAt  // Added default for existing rows
   createdAt   DateTime @default(now())
+=======
+  id        String   @id @default(uuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  token     String   @unique
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+>>>>>>> authentication
 }
 
 model WifiPoint {

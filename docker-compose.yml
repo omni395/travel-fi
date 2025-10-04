@@ -23,12 +23,20 @@ services:
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - CHOKIDAR_USEPOLLING=true
       - NUXT_HOST=0.0.0.0
+<<<<<<< HEAD
       - NODE_OPTIONS=--max-old-space-size=1024
     depends_on:
       - postgres
       - redis
     #cpus: "1"
     #mem_limit: "2g"
+=======
+    depends_on:
+      - postgres
+      - redis
+    #cpus: "0.5"
+    #mem_limit: "1g"
+>>>>>>> authentication
     env_file:
       - ".env"
     user: "${UID}:${GID}"
