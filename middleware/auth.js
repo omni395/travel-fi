@@ -1,6 +1,14 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const user = useState('user', () => null)
-  if (to.path.startsWith('/auth/') || to.path === '/') return // Allow auth pages and home
+  // Если пользователь авторизован, не пускать на /auth/login и /auth/register
+  if ((to.path === '/auth/login' || to.path === '/auth/register')) {
+    const { data: { user: sessionUser } } = await $fetch('/api/auth/session')
+    if (sessionUser) {
+      return navigateTo('/dashboard')
+    }
+    return // разрешить неавторизованным
+  }
+  if (to.path === '/') return // Allow home
 
   const { data: { user: sessionUser } } = await $fetch('/api/auth/session')
   user.value = sessionUser

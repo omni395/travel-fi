@@ -17,16 +17,7 @@ export default defineNuxtConfig({
     'nuxt-cron',
     '@vueuse/nuxt',
   ],
-  runtimeConfig: {
-    secret: process.env.NUXT_SECRET, // Added for HMAC/JWT
-    oauth: {
-      google: {
-        clientId: process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID,
-        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET,
-        redirectURL: process.env.NUXT_OAUTH_GOOGLE_REDIRECT_URL || '/api/auth/google',
-      },
-    },
-  },
+  // runtimeConfig секция будет ниже
   vuetify: {
     vuetifyOptions: {
       theme: {
@@ -170,16 +161,17 @@ export default defineNuxtConfig({
     autoSetupPrisma: true,
   },
   runtimeConfig: {
+    secret: process.env.NUXT_SECRET, // Added for HMAC/JWT
     public: {
       oauth: {
         google: {
-          clientId: process.env.NUXT_PUBLIC_OAUTH_GOOGLE_CLIENT_ID || ''
+          clientId: process.env.NUXT_PUBLIC_OAUTH_GOOGLE_CLIENT_ID || process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID || ''
         }
       }
     },
     oauth: {
       google: {
-        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET || '',
+        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET || process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET || '',
         redirectURL: process.env.NUXT_OAUTH_GOOGLE_REDIRECT_URL || '/api/auth/google'
       }
     }
