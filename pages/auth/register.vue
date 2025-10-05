@@ -45,7 +45,7 @@
             <v-divider class="my-6" />
             <div class="text-center">
               {{ t('auth.haveAccount') }}
-              <NuxtLink to="/auth/login" class="ml-2 text-white">{{ t('auth.loginLink') }}</NuxtLink>
+              <NuxtLink :to="$localePath('/auth/login')" class="ml-2 text-white">{{ t('auth.loginLink') }}</NuxtLink>
             </div>
           </v-card-text>
         </CustomCard>
@@ -69,6 +69,7 @@ const csrfToken = ref('')
 
 const router = useRouter()
 const { t } = useI18n()
+const localePath = useLocalePath()
 const toast = useToast() // Из nuxt-toast, auto-imported
 
 onMounted(async () => {
@@ -102,7 +103,7 @@ async function onSubmit() {
       position: 'topRight',
       timeout: 3000
     })
-    await router.push('/dashboard')
+    await router.push(localePath('/dashboard'))
   } catch (e) {
     toast.error({
       title: t('auth.errorRegister'),

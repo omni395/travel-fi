@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="d-flex flex-column" style="min-height: 100vh;">
+  <v-layout class="d-flex flex-column" style="min-height: 100vh">
     <v-overlay
       v-model="isLoading"
       class="align-center justify-center"
@@ -20,15 +20,16 @@
       <slot />
       <PWAInstall />
     </v-main>
+
     <Footer />
   </v-layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import NavBar from '@/components/NavBar.vue';
-import Footer from '@/components/Footer.vue';
-import PWAInstall from '@/components/PWAInstall.vue';
+import { ref, onMounted } from "vue";
+import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
+import PWAInstall from "@/components/PWAInstall.vue";
 
 // The splash screen is shown until the page is fully loaded
 const isLoading = ref(true);

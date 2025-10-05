@@ -22,7 +22,7 @@
             </v-form>
             <v-divider class="my-6" />
             <div class="text-center">
-              <NuxtLink to="/auth/login" class="text-white">{{ t('auth.backToLogin') }}</NuxtLink>
+              <NuxtLink :to="$localePath('/auth/login')" class="text-white">{{ t('auth.backToLogin') }}</NuxtLink>
             </div>
           </v-card-text>
         </CustomCard>
@@ -58,5 +58,3 @@ async function onSubmit() {
 
 <style scoped>
 </style>
-
-

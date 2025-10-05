@@ -45,7 +45,7 @@
             <v-divider class="my-6" />
             <div class="text-center">
               {{ t('auth.haveAccount') }}
-              <NuxtLink to="/auth/login" class="ml-2 text-white">{{ t('auth.loginLink') }}</NuxtLink>
+              <NuxtLink :to="$localePath('/auth/login')" class="ml-2 text-white">{{ t('auth.loginLink') }}</NuxtLink>
             </div>
           </v-card-text>
         </CustomCard>
@@ -58,6 +58,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
@@ -67,6 +68,7 @@ const isLoading = ref(false)
 
 const router = useRouter()
 const { t } = useI18n()
+const localePath = useLocalePath()
 const { $toast } = useNuxtApp()
 
 async function onSubmit() {
@@ -81,7 +83,7 @@ async function onSubmit() {
       body: { email: email.value, password: password.value }
     })
     $toast?.success(t('auth.successRegister'))
-    await router.push('/dashboard')
+    await router.push(localePath('/dashboard'))
   } catch (e) {
     $toast?.error(t('auth.errorRegister'))
   } finally {
@@ -92,5 +94,3 @@ async function onSubmit() {
 
 <style scoped>
 </style>
-
-

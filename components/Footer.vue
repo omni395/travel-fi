@@ -6,8 +6,8 @@
           <span>{{ t('footer.copyright') }} &copy; 2025 TravelFi</span>
         </v-col>
         <v-col cols="12" md="6" class="text-right">
-          <NuxtLink to="/terms" class="text-white mx-2">{{ t('footer.terms') }}</NuxtLink>
-          <NuxtLink to="/privacy" class="text-white mx-2">{{ t('footer.privacy') }}</NuxtLink>
+          <NuxtLink :to="$localePath('/terms')" class="text-white mx-2">{{ t('footer.terms') }}</NuxtLink>
+          <NuxtLink :to="$localePath('/privacy')" class="text-white mx-2">{{ t('footer.privacy') }}</NuxtLink>
           <CustomIcon name="mdi-twitter" color="accent" class="mx-2" />
         </v-col>
       </v-row>

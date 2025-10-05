@@ -1,6 +1,8 @@
 {
   "$vuetify.input.prependAction": "",
   "$vuetify.input.clear": "Limpiar",
+  "forbiddenTitle": "Acceso Denegado",
+  "forbiddenText": "No tienes permiso para acceder a esta página",
   "slogan": "¡Encuentra Wi-Fi y eSIM, mantente conectado en cualquier lugar!",
   "hero_subtitle": "Descubre Wi-Fi gratuito, eSIM asequibles y conexiones seguras en todo el mundo.",
   "install_app": "Instalar aplicación",
@@ -27,7 +29,7 @@
     "security": "Seguridad de red",
     "security_desc": "Comprobaciones de red impulsadas por IA y recomendaciones de VPN.",
     "gamification": "Gana recompensas",
-    "gamification_desc": "Obtén puntos TRAVEL, insignias y posiciones en la tabla de clasificación."
+    "gamification_desc": "Obtén puntos TRAVELFI, insignias y posiciones en la tabla de clasificación."
   },
   "dashboard": {
     "title": "Panel de Control",
@@ -40,7 +42,7 @@
     "user": "Usuario",
     "view": "Ver",
     "invite": "Invitar",
-    "meta_description": "Administra tus puntos TRAVEL, revisa notificaciones y verifica tu rango en la tabla de clasificación.",
+    "meta_description": "Administra tus puntos TRAVELFI, revisa notificaciones y verifica tu rango en la tabla de clasificación.",
     "userDetails": "Detalles del Usuario",
     "field": "Campo",
     "value": "Valor",

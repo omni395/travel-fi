@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
   // Create JWT token
   const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30  // 30 days
-  const data = `${user.id}:user:${exp}`  // userId:role:exp
+  const data = `${user.id}:${user.role}:${exp}`  // userId:role:exp
   const signature = crypto.createHmac('sha256', SECRET).update(data).digest('base64url')
   const token = `${data}.${signature}`
 

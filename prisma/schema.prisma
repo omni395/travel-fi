@@ -14,7 +14,7 @@ model User {
   confirmedEmail    Boolean              @default(false) // Added for OAuth
   password          String? // Hashed, null for OAuth/Web3
   walletAddress     String? // Metamask
-  points            Int                  @default(0) // TRAVEL
+  points            Int                  @default(0) // TRAVELFI
   role              String               @default("user") // user, admin, moderator
   referralCode      String?              @unique
   pushEnabled       Boolean              @default(false)
@@ -136,7 +136,7 @@ model Affiliate {
   id         Int      @id @default(autoincrement())
   provider   String // \"Airalo\"
   discount   Float // USD (5.0)
-  travelCost Int // TRAVEL (100)
+  travelCost Int // TRAVELFI (100)
   link       String // Affiliate URL
   createdAt  DateTime @default(now())
 }

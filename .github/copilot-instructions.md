@@ -14,7 +14,7 @@
 Быть в курсе соглашений и шаблонов, используемых в проекте, включая соглашения по именованию, структуру API, i18n, аутентификацию и безопасность, геймификацию и обработку ошибок.
 
 ## Project Overview
-Travel-Fi is a Nuxt 4 Progressive Web App (PWA) for travelers to find and add Wi-Fi hotspots and eSIM tariffs. It features gamification with TRAVEL points, badges (Beginner to Legend), leaderboards, referrals, and security checks using AI (Hugging Face). The app supports multilingual UI (en, ru, es, zh) and plans WhatsApp bot integration via Twilio. Core data models include User, WifiPoint, EsimTariff, Contribution, Review, SecurityReport, Feature, UserFeature, Session, AuditLog, managed via Prisma with PostgreSQL. Authentication uses nuxt-auth-utils with email/password, Google OAuth, and SIWE (Metamask). The app is Dockerized for development, with Redis for sessions/caching and cron jobs for maintenance (e.g., check-features.ts).
+Travel-Fi is a Nuxt 4 Progressive Web App (PWA) for travelers to find and add Wi-Fi hotspots and eSIM tariffs. It features gamification with TRAVELFI points, badges (Beginner to Legend), leaderboards, referrals, and security checks using AI (Hugging Face). The app supports multilingual UI (en, ru, es, zh) and plans WhatsApp bot integration via Twilio. Core data models include User, WifiPoint, EsimTariff, Contribution, Review, SecurityReport, Feature, UserFeature, Session, AuditLog, managed via Prisma with PostgreSQL. Authentication uses nuxt-auth-utils with email/password, Google OAuth, and SIWE (Metamask). The app is Dockerized for development, with Redis for sessions/caching and cron jobs for maintenance (e.g., check-features.ts).
 
 Key goals: Enable secure, gamified discovery of connectivity options; reward contributions; integrate Web3 for token-based rewards (ERC-20 on Polygon via ethers.js).
 
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
 - **Auth**: nuxt-auth-utils for sessions/JWT (Session model with token, expiresAt, isActive); Google via runtimeConfig.oauth (scopes: email, profile); SIWE in server/api/auth/siwe/ with ethers.js nonce verification (EIP-4361).
 - **AI/ML**: @huggingface/inference for sentiment (detoxify in server/services/review.service.ts?), ranking (sentence-transformers) in services/feature.service.ts and email.service.ts (Nodemailer for confirmations via server/services/email.service.ts).
 - **Maps/Push**: Leaflet for geolocation (useGeolocation from @vueuse/nuxt in pages/wifi.vue); web-push for notifications (VAPID keys in env, PushSubscription model).
-- **Web3**: ethers.js for Metamask connect in auth/siwe/ (walletAddress in User); Moralis for token balances in dashboard.vue (if walletAddress set, query ERC-20 TRAVEL on Polygon).
+- **Web3**: ethers.js for Metamask connect in auth/siwe/ (walletAddress in User); Moralis for token balances in dashboard.vue (if walletAddress set, query ERC-20 TRAVELFI on Polygon).
 - **Other**: Twilio for WhatsApp bot (env vars in .env); @nuxtjs/google-gtag for analytics; nuxt-cron for scheduled tasks (server/cron/check-features.ts: expire UserFeature where expiresAt < now()). @mdi/font for icons in css.
 
 Cross-component: UsePinia stores sparingly; prefer composables (e.g., useAuth composable calls /api/auth/session.get.ts). For AI calls, cache in Redis (e.g., via nuxt-auth-utils session storage). Use Custom components for UI consistency (e.g., CustomButton with color="primary").

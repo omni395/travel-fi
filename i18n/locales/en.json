@@ -1,6 +1,8 @@
 {
   "$vuetify.input.prependAction": "",
   "$vuetify.input.clear": "Clear",
+  "forbiddenTitle": "Access Denied",
+  "forbiddenText": "You do not have permission to access this page",
   "slogan": "Find Wi-Fi & eSIM, stay connected anywhere!",
   "hero_subtitle": "Discover free Wi-Fi, affordable eSIMs, and secure connections worldwide.",
   "install_app": "Install App",
@@ -12,7 +14,13 @@
     "about": "About",
     "login": "Login",
     "signup": "Sign Up",
-    "admin": "Admin"
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "user": "User",
+    "guest": "Guest"
   },
   "footer": {
     "copyright": "Copyright",
@@ -27,7 +35,7 @@
     "security": "Network Safety",
     "security_desc": "AI-powered network checks and VPN recommendations.",
     "gamification": "Earn Rewards",
-    "gamification_desc": "Gain TRAVEL points, badges, and leaderboard ranks."
+    "gamification_desc": "Gain TRAVELFI points, badges, and leaderboard ranks."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -40,7 +48,7 @@
     "user": "User",
     "view": "View",
     "invite": "Invite",
-    "meta_description": "Manage your TRAVEL points, view notifications, and check your leaderboard rank.",
+    "meta_description": "Manage your TRAVELFI points, view notifications, and check your leaderboard rank.",
     "userDetails": "User Details",
     "field": "Field",
     "value": "Value",
@@ -106,8 +114,11 @@
     "accountCreated": "Account created",
     "registrationFailed": "Registration failed",
     "emailVerified": "Email verified",
+    "loggedOut": "Logged out successfully",
+    "logoutSuccess": "You have been logged out",
+    "errorLogout": "Logout failed",
+    "logoutFailed": "Failed to logout",
     "verificationFailed": "Verification failed",
-    "loggedOut": "Logged out",
     "verifyEmailPanel": "Verify your email for full access.",
     "codeFromEmail": "Code from email",
     "confirm": "Confirm"

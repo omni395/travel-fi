@@ -3,7 +3,9 @@
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6" lg="4">
         <CustomCard>
-          <v-card-title class="text-h5 text-center">{{ t('auth.loginTitle') }}</v-card-title>
+          <v-card-title class="text-h5 text-center">{{
+            t("auth.loginTitle")
+          }}</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="onSubmit" :disabled="isLoading">
               <v-text-field
@@ -29,28 +31,51 @@
                 required
               />
               <div class="d-flex justify-end mb-4">
-                <NuxtLink to="/auth/forgot" class="text-white">{{ t('auth.forgot') }}</NuxtLink>
+                <NuxtLink
+                  :to="$localePath('/auth/forgot')"
+                  class="text-white"
+                  >{{ t("auth.forgot") }}</NuxtLink
+                >
               </div>
-              <CustomButton type="submit" color="primary" :loading="isLoading" block>
-                {{ t('auth.loginBtn') }}
+              <CustomButton
+                type="submit"
+                color="primary"
+                :loading="isLoading"
+                block
+              >
+                {{ t("auth.loginBtn") }}
               </CustomButton>
             </v-form>
             <v-divider class="my-6" />
-            <div class="text-center mb-4">{{ t('auth.or') }}</div>
+            <div class="text-center mb-4">{{ t("auth.or") }}</div>
             <div class="d-flex flex-column gap-3">
-              <CustomButton color="secondary" @click="loginWithGoogle" :loading="isLoading" block>
+              <CustomButton
+                color="secondary"
+                @click="loginWithGoogle"
+                :loading="isLoading"
+                block
+              >
                 <v-icon start>mdi-google</v-icon>
                 Google
               </CustomButton>
-              <CustomButton color="accent" @click="loginWithMetamask" :loading="isLoading" block>
+              <CustomButton
+                color="accent"
+                @click="loginWithMetamask"
+                :loading="isLoading"
+                block
+              >
                 <v-icon start>mdi-ethereum</v-icon>
                 Metamask
               </CustomButton>
             </div>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <span>{{ t('auth.noAccount') }}</span>
-            <NuxtLink to="/auth/register" class="ml-2 text-white">{{ t('auth.registerLink') }}</NuxtLink>
+            <span>{{ t("auth.noAccount") }}</span>
+            <NuxtLink
+              :to="$localePath('/auth/register')"
+              class="ml-2 text-white"
+              >{{ t("auth.registerLink") }}</NuxtLink
+            >
           </v-card-actions>
         </CustomCard>
       </v-col>
@@ -60,66 +85,69 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const isLoading = ref(false)
-const csrfToken = ref('')
+const email = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const isLoading = ref(false);
+const csrfToken = ref("");
 
-const router = useRouter()
-const { t } = useI18n()
-const toast = useToast()  // Из nuxt-toast, auto-imported
+const router = useRouter();
+const { t } = useI18n();
+const localePath = useLocalePath();
+const toast = useToast(); // Из nuxt-toast, auto-imported
+const { login } = useUser(); // Используем новый API
 
 onMounted(async () => {
   try {
-    const { csrf } = await $fetch('/api/csrf')
-    csrfToken.value = csrf
+    const { csrf } = await $fetch("/api/csrf");
+    csrfToken.value = csrf;
   } catch (e) {
-    console.error('CSRF fetch error:', e)
+    console.error("CSRF fetch error:", e);
   }
-})
+});
 
 async function onSubmit() {
-  if (!email.value || !password.value) return
-  isLoading.value = true
+  if (!email.value || !password.value) return;
+
   try {
-    const res = await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: { email: email.value, password: password.value, _csrf: csrfToken.value }
-    })
+    await login({
+      email: email.value,
+      password: password.value,
+      _csrf: csrfToken.value,
+    });
+
     toast.success({
-      title: t('auth.successLogin'),
-      message: t('auth.welcome'),
-      position: 'topRight',
-      timeout: 3000
-    })
-    await router.push('/dashboard')
+      title: t("auth.successLogin"),
+      message: t("auth.welcome"),
+      position: "topRight",
+      timeout: 3000,
+    });
+
+    await router.push(localePath("/dashboard"));
   } catch (e) {
     toast.error({
-      title: t('auth.errorLogin'),
-      message: t('auth.loginFailed'),
-      position: 'topRight',
-      timeout: 3000
-    })
-  } finally {
-    isLoading.value = false
+      title: t("auth.errorLogin"),
+      message: t("auth.loginFailed"),
+      position: "topRight",
+      timeout: 3000,
+    });
   }
 }
 
 async function loginWithGoogle() {
   try {
-    const urlParams = new URLSearchParams(window.location.search)
-    if (urlParams.get('error')) {
-      toast.error(t('auth.errorOAuth'))
-      return
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error")) {
+      toast.error(t("auth.errorOAuth"));
+      return;
     }
-    window.location.href = '/api/auth/google'
+    window.location.href = "/api/auth/google";
   } catch (e) {
-    toast.error(t('auth.errorOAuth'))
+    toast.error(t("auth.errorOAuth"));
   }
 }
 
@@ -127,42 +155,50 @@ async function loginWithMetamask() {
   try {
     if (!window.ethereum) {
       toast.error({
-        title: t('auth.metamaskMissing'),
-        message: t('auth.metamaskMissing'),
-        position: 'topRight',
-        timeout: 3000
-      })
-      return
+        title: t("auth.metamaskMissing"),
+        message: t("auth.metamaskMissing"),
+        position: "topRight",
+        timeout: 3000,
+      });
+      return;
     }
-    isLoading.value = true
-    const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    const { nonce } = await $fetch('/api/auth/siwe/nonce')
-    const message = `Sign-in with Ethereum to TravelFi.\n\nAddress: ${account}\nNonce: ${nonce}`
-    const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, account] })
-    await $fetch('/api/auth/siwe/verify', { method: 'POST', body: { message, signature, _csrf: csrfToken.value } })
+    isLoading.value = true;
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const { nonce } = await $fetch("/api/auth/siwe/nonce");
+    const message = `Sign-in with Ethereum to TravelFi.\n\nAddress: ${account}\nNonce: ${nonce}`;
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [message, account],
+    });
+    await $fetch("/api/auth/siwe/verify", {
+      method: "POST",
+      body: { message, signature, _csrf: csrfToken.value },
+    });
     toast.success({
-      title: t('auth.walletConnected'),
-      message: t('auth.walletConnected'),
-      position: 'topRight',
-      timeout: 3000
-    })
-    const { user: sessionUser } = await $fetch('/api/auth/session')
-    // если есть useUser, можно user.value = sessionUser
-    await router.push('/dashboard')
+      title: t("auth.walletConnected"),
+      message: t("auth.walletConnected"),
+      position: "topRight",
+      timeout: 3000,
+    });
+
+    // Обновляем состояние пользователя после SIWE аутентификации
+    const { fetchUser } = useUser();
+    await fetchUser();
+
+    await router.push(localePath("/dashboard"));
   } catch (e) {
     toast.error({
-      title: t('auth.errorSIWE'),
-      message: t('auth.errorSIWE'),
-      position: 'topRight',
-      timeout: 3000
-    })
+      title: t("auth.errorSIWE"),
+      message: t("auth.errorSIWE"),
+      position: "topRight",
+      timeout: 3000,
+    });
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>
 
-<style scoped>
-</style>
-
-
+<style scoped></style>

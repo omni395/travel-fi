@@ -8,7 +8,7 @@
       <v-col cols="12" md="6">
         <h1 class="text-primary text-h3 font-weight-bold">{{ t('slogan') }}</h1>
         <p class="text-secondary text-h6 mt-4">{{ t('hero_subtitle') }}</p>
-        <CustomButton to="/auth/signup" color="accent" variant="elevated" size="large" class="mt-4">
+        <CustomButton :to="$localePath('/auth/signup')" color="accent" variant="elevated" size="large" class="mt-4">
           {{ t('get_started') }}
         </CustomButton>
       </v-col>

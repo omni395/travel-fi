@@ -1,4 +1,4 @@
-import { createI18n } from 'vue-i18n';
+import { createI18n } from "vue-i18n";
 
 // Asynchronously load JSON files
 async function loadMessages() {
@@ -24,8 +24,8 @@ export default defineI18nConfig(async () => {
 
   return {
     legacy: false,
-    locale: 'en',
-    fallbackLocale: 'en',
+    locale: "en",
+    fallbackLocale: "en",
     messages,
   };
 });

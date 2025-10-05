@@ -1,6 +1,8 @@
 {
   "$vuetify.input.prependAction": "",
   "$vuetify.input.clear": "清除",
+  "forbiddenTitle": "访问被拒绝",
+  "forbiddenText": "您没有权限访问此页面",
   "slogan": "找到Wi-Fi和eSIM，随时随地保持连接！",
   "hero_subtitle": "发现免费Wi-Fi、实惠的eSIM和全球安全连接。",
   "install_app": "安装应用",
@@ -27,7 +29,7 @@
     "security": "网络安全",
     "security_desc": "人工智能驱动的网络检查和VPN推荐。",
     "gamification": "获得奖励",
-    "gamification_desc": "赚取TRAVEL积分、徽章和排行榜名次。"
+    "gamification_desc": "赚取TRAVELFI积分、徽章和排行榜名次。"
   },
   "dashboard": {
     "title": "仪表板",
@@ -40,7 +42,7 @@
     "user": "用户",
     "view": "查看",
     "invite": "邀请",
-    "meta_description": "管理您的TRAVEL积分，查看通知并检查您在排行榜中的排名。",
+    "meta_description": "管理您的TRAVELFI积分，查看通知并检查您在排行榜中的排名。",
     "userDetails": "用户详情",
     "field": "字段",
     "value": "值",
