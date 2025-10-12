@@ -50,25 +50,44 @@ const endpointAccess = {
     { method: "POST", path: "/api/user/check-email" },
     { method: "POST", path: "/api/user/check-wallet" },
     { method: "POST", path: "/api/user/upload-profile-picture" },
+    { method: "GET", path: "/manifest.webmanifest" },
+    { method: "GET", path: "/pwa-*" },
+    { method: "GET", path: "/apple-touch-icon*" },
+    { method: "GET", path: "/android-chrome-*" },
+    { method: "GET", path: "/safari-pinned-tab.svg" },
   ] as EndpointRule[],
   auth: [
-    { method: "*", path: "/api/dashboard" },
-    { method: "*", path: "/api/profile" },
-    { method: "*", path: "/api/contributions" },
-    { method: "*", path: "/api/reviews" },
+    { method: "GET", path: "/api/dashboard" },
+    { method: "GET", path: "/api/profile" },
+    { method: "GET", path: "/api/contributions" },
+    { method: "GET", path: "/api/reviews" },
     { method: "*", path: "/api/notifications" },
-    { method: "*", path: "/api/wifi/post" },
-    { method: "*", path: "/api/esim/post" },
+    { method: "POST", path: "/api/wifi" },
+    { method: "POST", path: "/api/wifi/*/security-report" },
+    { method: "PATCH", path: "/api/wifi/*/update" },
+    { method: "DELETE", path: "/api/wifi/*" },
+    { method: "PATCH", path: "/api/wifi/*/review/*" },
+    { method: "DELETE", path: "/api/wifi/*/review/*" },
+    { method: "PATCH", path: "/api/wifi/*/security-report/*" },
+    { method: "DELETE", path: "/api/wifi/*/security-report/*" },
+    { method: "POST", path: "/api/esim" },
     { method: "*", path: "/api/security" },
     { method: "*", path: "/dashboard" },
     { method: "*", path: "/profile" },
     { method: "POST", path: "/api/user/update" },
+    { method: "GET", path: "/api/user/profile/stats" },
+    { method: "PATCH", path: "/api/user/profile" },
+    { method: "POST", path: "/api/user/profile/avatar" },
+    { method: "PATCH", path: "/api/user/profile/push" },
+    { method: "POST", path: "/api/user/profile/wallet" },
+    { method: "DELETE", path: "/api/user/profile/wallet" },
   ] as EndpointRule[],
   admin: [
-    { method: "*", path: "/api/admin" },
-    { method: "*", path: "/api/moderation" },
-    { method: "*", path: "/api/users" },
-    { method: "*", path: "/admin" },
+    { method: "*", path: "/api/admin/*" },
+    { method: "*", path: "/api/users/*" },
+    { method: "*", path: "/api/wifi/*" },
+    { method: "*", path: "/api/settings/*" },
+    { method: "*", path: "/admin/*" },
   ] as EndpointRule[],
   system: [
     { method: "*", path: "/api/cron/*" },
@@ -109,6 +128,12 @@ function matchPathAndMethod(
       return cleanPath === cleanRule;
     }
   });
+}
+
+// Top-level helper to strip locale prefix from a path (reused elsewhere)
+function stripLocale(path: string): string {
+  const match = path.match(/^\/([a-z]{2})(\/.*)$/);
+  return match ? match[2] : path;
 }
 
 // Manual token verify (stateless, built-in crypto HMAC)
@@ -155,7 +180,12 @@ export default defineEventHandler(async (event) => {
     path === "/favicon.ico" ||
     path.startsWith("/__nuxt_error") ||
     path.startsWith("/@") ||
-    path.includes("hot-update")
+    path.includes("hot-update") ||
+    path.includes("manifest.webmanifest") ||
+    path.match(/\/pwa-\d+x\d+\.png$/) ||
+    path.match(/\/apple-touch-icon.*\.png$/) ||
+    path.match(/\/android-chrome-.*\.png$/) ||
+    path.match(/\/safari-pinned-tab\.svg$/)
   ) {
     return;
   }
@@ -181,25 +211,39 @@ export default defineEventHandler(async (event) => {
   if (method === "POST") {
     const csrfCookie = getCookie(event, "csrf-token");
     if (!csrfCookie) {
-      throw createError({
-        statusCode: 403,
-        message: "Forbidden: CSRF token required",
-      });
+      throw createError({ statusCode: 403, message: "Forbidden: CSRF token required" });
+    }
+
+    // csrfCookie is signed as '<csrf>.<signature>' in /api/csrf
+    const parts = String(csrfCookie).split(".");
+    if (parts.length !== 2) {
+      throw createError({ statusCode: 403, message: "Forbidden: Invalid CSRF cookie format" });
+    }
+
+    const [cookieCsrf, cookieSignature] = parts;
+    const expectedSig = crypto.createHmac("sha256", SECRET).update(cookieCsrf).digest("base64url");
+    if (cookieSignature !== expectedSig) {
+      throw createError({ statusCode: 403, message: "Forbidden: Invalid CSRF cookie signature" });
     }
 
     let bodyCsrf;
     try {
-      const body = await readBody(event);
-      bodyCsrf = body._csrf || getHeader(event, "x-csrf-token");
-    } catch {
+      // If this is a multipart/form-data request (file upload), do not call readBody()
+      // because that would consume the request stream and make formidable on the
+      // route handler hang waiting for data. Use header x-csrf-token in that case.
+      const contentType = String(getHeader(event, 'content-type') || '').toLowerCase();
+      if (contentType.startsWith('multipart/')) {
+        bodyCsrf = getHeader(event, 'x-csrf-token');
+      } else {
+        const body = await readBody(event);
+        bodyCsrf = body?._csrf || getHeader(event, 'x-csrf-token');
+      }
+    } catch (err) {
       bodyCsrf = getHeader(event, "x-csrf-token");
     }
 
-    if (bodyCsrf !== csrfCookie) {
-      throw createError({
-        statusCode: 403,
-        message: "Forbidden: Invalid CSRF token",
-      });
+    if (!bodyCsrf || String(bodyCsrf) !== cookieCsrf) {
+      throw createError({ statusCode: 403, message: "Forbidden: Invalid CSRF token" });
     }
 
     // Single-use: Delete after validate
@@ -280,51 +324,32 @@ export default defineEventHandler(async (event) => {
         message: "Unauthorized: User not found",
       });
     }
-    // Проверяем confirmedEmail только для API изменений (POST/PUT/DELETE)
-    if (path.startsWith("/api/") && method !== "GET" && !user.confirmedEmail) {
-      console.log(`Server middleware: Email not confirmed for ${path}`);
-      throw createError({
-        statusCode: 403,
-        message: "Verify email first",
-      });
+    // Проверяем confirmedEmail и заполненное имя только для API изменений (POST/PUT/DELETE),
+    // кроме PATCH /api/user/profile и POST /api/user/profile/avatar (разрешаем их всегда)
+    if (
+      path.startsWith("/api/") &&
+      method !== "GET" &&
+      !(
+        (method === "PATCH" && stripLocale(path) === "/api/user/profile") ||
+        (method === "POST" && stripLocale(path) === "/api/user/profile/avatar") ||
+        (method === "POST" && stripLocale(path) === "/api/user/profile/wallet") ||
+        (method === "POST" && stripLocale(path).match(/^\/api\/wifi\/\d+\/security-report$/)) ||
+        (method === "PATCH" && stripLocale(path).match(/^\/api\/wifi\/\d+\/update$/)) ||
+        (method === "DELETE" && stripLocale(path).match(/^\/api\/wifi\/\d+$/))
+      )
+    ) {
+      if (!user.confirmedEmail || !user.name) {
+        console.log(`Server middleware: Profile incomplete for ${path}. confirmedEmail=${user.confirmedEmail}, name=${user.name}`);
+        throw createError({
+          statusCode: 403,
+          message: "complete_profile",
+        });
+      }
     }
     console.log(`Server middleware: Auth access granted for ${path}`);
     event.context.auth = {
       user: user,
     };
-    return;
-  }
-
-  // Для всех остальных API эндпоинтов устанавливаем контекст если админ
-  if (isAdmin) {
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        confirmedEmail: true,
-        walletAddress: true,
-        points: true,
-        role: true,
-        referralCode: true,
-        pushEnabled: true,
-        lastLocation: true,
-        language: true,
-        travelPreferences: true,
-        badges: true,
-        leaderboardRank: true,
-        profilePicture: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    if (user) {
-      event.context.auth = {
-        user: user,
-      };
-    }
-    console.log(`Server middleware: Admin context set for ${path}`);
     return;
   }
 

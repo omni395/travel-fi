@@ -1,8 +1,47 @@
 <template>
-  <v-app-bar color="primary" elevation="2" fixed>
-    <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer" />
+  <v-app-bar
+    app
+    elevation="2"
+    :style="{
+      background:
+        'linear-gradient(135deg, rgb(var(--v-theme-secondary)) 0%, rgb(var(--v-theme-primary)) 100%)',
+    }"
+  >
+    <v-menu v-if="isMobile">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon v-bind="props" />
+      </template>
+
+      <v-list
+        :style="{
+          background:
+            'linear-gradient(135deg, rgb(var(--v-theme-secondary)) 0%, rgb(var(--v-theme-primary)) 100%)',
+        }"
+      >
+        <v-list-item
+          v-for="item in navItems"
+          :key="item.title"
+          :to="item.to"
+          class="text-white"
+          @click=""
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-toolbar-title>
-      <NuxtLink :to="$localePath('/')" class="text-white">TravelFi</NuxtLink>
+      <NuxtLink
+        :to="localePath('/')"
+        class="d-flex align-center text-white text-decoration-none"
+      >
+        <img
+          src="~/assets/images/logo-1.png"
+          alt="TravelFi Logo"
+          class="mr-2"
+          style="height: 32px; width: auto"
+        />
+        TravelFi
+      </NuxtLink>
     </v-toolbar-title>
     <v-spacer />
     <v-toolbar-items v-if="!isMobile">
@@ -20,8 +59,10 @@
     <!-- Кнопки для неавторизованных пользователей -->
     <ClientOnly>
       <template v-if="!user">
+        <!-- Desktop version -->
         <CustomButton
-          :to="$localePath('/auth/login')"
+          v-if="!isMobile"
+          :to="localePath('/auth/login')"
           color="accent"
           variant="elevated"
           class="ml-4"
@@ -29,31 +70,73 @@
           {{ t("nav.login") }}
         </CustomButton>
         <CustomButton
-          :to="$localePath('/auth/signup')"
+          v-if="!isMobile"
+          :to="localePath('/auth/signup')"
           color="accent"
           variant="elevated"
           class="ml-2"
         >
           {{ t("nav.signup") }}
         </CustomButton>
+
+        <!-- Mobile version -->
+        <v-btn
+          v-if="isMobile"
+          :to="localePath('/auth/login')"
+          icon
+          variant="text"
+          color="accent"
+          class="ml-2"
+          :title="t('nav.login')"
+        >
+          <v-icon>mdi-login</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="isMobile"
+          :to="localePath('/auth/signup')"
+          icon
+          variant="text"
+          color="accent"
+          class="ml-1"
+          :title="t('nav.signup')"
+        >
+          <v-icon>mdi-account-plus</v-icon>
+        </v-btn>
       </template>
 
-    <!-- Меню пользователя для авторизованных -->
-    <UserMenu v-if="user" class="ml-4" />
+      <!-- Меню пользователя для авторизованных -->
+      <UserMenu v-if="user" />
     </ClientOnly>
-    <v-menu>
+
+    <v-menu :close-on-content-click="false" :min-width="60" max-width="100">
       <template v-slot:activator="{ props }">
         <v-btn
           color="white"
           v-bind="props"
-          class="language-menu-btn"
+          class="language-menu-btn ml-2 mr-4 px-2"
           data-test="language-menu-btn"
+          size="small"
+          variant="text"
+          density="compact"
+          height="32"
+          min-width="auto"
+          width="auto"
         >
-          {{ currentLocaleName || "Select Language" }}
-          <v-icon end>mdi-menu-down</v-icon>
+          <span class="text-caption">{{
+            currentLocale?.code?.toUpperCase() || currentLocaleName || "EN"
+          }}</span>
+          <v-icon size="small" class="ml-1" end>mdi-menu-down</v-icon>
         </v-btn>
       </template>
-      <v-list bg-color="secondary">
+      <v-list
+        :style="{
+          background:
+            'linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-secondary)) 100%)',
+          minWidth: '60px',
+          padding: '4px 0',
+        }"
+        class="py-0"
+      >
         <v-list-item
           v-for="locale in availableLocales"
           :key="locale.code"
@@ -61,103 +144,33 @@
           @click="changeLocale(locale.code)"
           data-test="language-item"
         >
-          <v-list-item-title color="white">{{ locale.name }}</v-list-item-title>
+          <v-list-item-title
+            class="text-center"
+            style="font-size: 0.8rem; line-height: 1.2"
+            >{{ locale.name }}</v-list-item-title
+          >
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-navigation-drawer
-      v-model="drawer"
-      temporary
-      rail-width="56"
-      v-if="isMobile"
-    >
-      <v-list>
-        <v-list-item
-          v-for="item in navItems"
-          :key="item.title"
-          :to="item.to"
-          @click="drawer = false"
-        >
-          {{ item.title }}
-        </v-list-item>
-
-        <!-- Для неавторизованных пользователей -->
-        <ClientOnly>
-          <template v-if="!user">
-            <v-divider class="my-2" />
-            <v-list-item
-              :to="$localePath('/auth/login')"
-              @click="drawer = false"
-            >
-              <template #prepend>
-                <v-icon>mdi-login</v-icon>
-              </template>
-              {{ t("nav.login") }}
-            </v-list-item>
-            <v-list-item
-              :to="$localePath('/auth/signup')"
-              @click="drawer = false"
-            >
-              <template #prepend>
-                <v-icon>mdi-account-plus</v-icon>
-              </template>
-              {{ t("nav.signup") }}
-            </v-list-item>
-          </template>
-
-          <!-- Для авторизованных пользователей -->
-          <template v-if="user">
-            <v-divider class="my-2" />
-            <v-list-item
-              :to="$localePath('/dashboard')"
-              @click="drawer = false"
-            >
-              <template #prepend>
-                <v-icon>mdi-view-dashboard</v-icon>
-              </template>
-              {{ t("nav.dashboard") }}
-            </v-list-item>
-            <v-list-item
-              v-if="isAdmin"
-              :to="$localePath('/admin')"
-              @click="drawer = false"
-            >
-              <template #prepend>
-                <v-icon>mdi-shield-crown</v-icon>
-              </template>
-              {{ t("nav.admin") }}
-            </v-list-item>
-            <v-list-item @click="handleMobileLogout" class="logout-item">
-              <template #prepend>
-                <v-icon>mdi-logout</v-icon>
-              </template>
-              {{ t("nav.logout") }}
-            </v-list-item>
-          </template>
-        </ClientOnly>
-      </v-list>
-    </v-navigation-drawer>
   </v-app-bar>
 </template>
 
 <script setup>
 import { useI18n } from "vue-i18n";
-import { useCookie, useRoute } from "#app";
-import { computed, ref } from "vue";
+import { useCookie, useLocalePath } from "#imports";
+import { computed } from "vue";
 import { useMediaQuery } from "@vueuse/core";
 import CustomButton from "@/components/CustomButton.vue";
 import UserMenu from "@/components/UserMenu.vue";
 import { useUser } from "~/composables/useUser";
 
-// Add useLocalePath from @nuxtjs/i18n
-const localePath = useLocalePath();
-
 const { t, setLocale, locales, locale } = useI18n();
-const route = useRoute();
 const isMobile = useMediaQuery("(max-width: 600px)");
-const drawer = ref(false);
-const { user, loggedIn, clear } = useUser();
+const { user } = useUser();
 const toast = useToast();
+
+// Всегда использовать useLocalePath (SSR/SPA одинаково)
+const localePath = useLocalePath();
 
 // Проверка админских прав
 const isAdmin = computed(() => {
@@ -169,6 +182,16 @@ const navItems = computed(() => [
   { title: t("nav.esim"), to: localePath("/esim") },
   { title: t("nav.about"), to: localePath("/about") },
 ]);
+
+// Add currentLocale computed property
+const currentLocale = computed(() => {
+  return (
+    availableLocales.value.find((l) => l.code === locale.value) || {
+      code: "en",
+      name: "EN",
+    }
+  );
+});
 
 const availableLocales = computed(() => {
   const locs =
@@ -231,6 +254,8 @@ const handleMobileLogout = async () => {
   text-transform: none;
   min-width: 120px;
   z-index: 1000;
+  min-height: 40px !important;
+  height: 40px !important;
 }
 
 .logout-item:hover {

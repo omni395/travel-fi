@@ -5,7 +5,7 @@ const SITE_URL = process.env.SITE_URL || 'https://travel-fi.com'
 function xmlEscape(value: string): string {
   return value
     .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
+    .replace(/</g, '<')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')

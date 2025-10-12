@@ -5,7 +5,7 @@ export const useCsrf = () => {
 
   onMounted(async () => {
     try {
-      const { csrf } = await $fetch('/api/csrf')
+      const { csrf } = await $fetch('/api/csrf', { credentials: 'include' })
       csrfToken.value = csrf
     } catch (e) {
       console.error('CSRF init error:', e)

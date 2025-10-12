@@ -74,7 +74,7 @@ const toast = useToast() // Из nuxt-toast, auto-imported
 
 onMounted(async () => {
   try {
-    const { csrf } = await $fetch('/api/csrf')
+  const { csrf } = await $fetch('/api/csrf', { credentials: 'include' })
     csrfToken.value = csrf
   } catch (e) {
     console.error('CSRF fetch error:', e)

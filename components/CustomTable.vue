@@ -10,8 +10,6 @@
   </v-data-table>
 </template>
 <script setup>
-import { ref } from 'vue'
-
 defineProps({
   items: { type: Array, default: () => [] },
   headers: { type: Array, default: () => [] }, // [{ title, key }]

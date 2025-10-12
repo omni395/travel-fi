@@ -103,7 +103,7 @@ const { login } = useUser(); // Используем новый API
 
 onMounted(async () => {
   try {
-    const { csrf } = await $fetch("/api/csrf");
+    const { csrf } = await $fetch("/api/csrf", { credentials: 'include' });
     csrfToken.value = csrf;
   } catch (e) {
     console.error("CSRF fetch error:", e);
@@ -112,23 +112,45 @@ onMounted(async () => {
 
 async function onSubmit() {
   if (!email.value || !password.value) return;
+  isLoading.value = true;
 
   try {
-    await login({
-      email: email.value,
-      password: password.value,
-      _csrf: csrfToken.value,
-    });
+    console.log('Login: attempting login for', email.value);
+    
+    // Сначала делаем логин через обычный fetch
+    const loginResult = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+        _csrf: csrfToken.value,
+      }),
+      credentials: 'include'
+    }).then(r => r.json());
 
-    toast.success({
-      title: t("auth.successLogin"),
-      message: t("auth.welcome"),
-      position: "topRight",
-      timeout: 3000,
-    });
+    console.log('Login: login result', loginResult);
 
-    await router.push(localePath("/dashboard"));
+    if (loginResult.ok) {
+      // После успешного логина обновляем состояние через useUser
+      const { fetchUser } = useUser();
+      await fetchUser();
+
+      toast.success({
+        title: t("auth.successLogin"),
+        message: t("auth.welcome"),
+        position: "topRight",
+        timeout: 3000,
+      });
+
+      await navigateTo(localePath("/dashboard"));
+    } else {
+      throw new Error("Login failed");
+    }
   } catch (e) {
+    console.error('Login error:', e);
     toast.error({
       title: t("auth.errorLogin"),
       message: t("auth.loginFailed"),

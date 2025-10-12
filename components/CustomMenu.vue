@@ -1,23 +1,16 @@
 <template>
-  <v-menu
-    v-bind="$attrs"
-  >
+  <v-menu>
     <template v-slot:activator="{ props }">
-      <slot name="activator" v-bind="{ ...props }" />
+      <slot name="activator" v-bind="props" />
     </template>
     <slot />
   </v-menu>
 </template>
 
 <script setup>
-defineProps({
-  // Этот пропс больше не используется, но можно оставить на всякий случай
-  color: { type: String, default: 'primary' }
-})
+// Простая обертка для v-menu без дополнительной логики
 </script>
 
 <style scoped>
-/* Убрали стили, которые ломали отображение, так как
-   теперь за это отвечает родительский компонент.
-*/
+/* Стили убраны, за отображение отвечает родительский компонент */
 </style>

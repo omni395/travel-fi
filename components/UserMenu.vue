@@ -1,127 +1,116 @@
 <template>
-  <CustomMenu>
+  <v-menu>
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
         color="white"
         variant="text"
-        class="user-menu-btn"
+        class="user-menu-btn ml-4 d-flex align-center"
       >
         <CustomAvatar
           :image="user?.profilePicture"
-          :initial="(user?.name || user?.email)?.charAt(0) || 'U'"
-          size="32"
-          class="mr-2"
+          :initial="(user?.name || 'U')?.charAt(0) || 'U'"
+          size="28"
+          class="mr-1"
         />
-        <span class="d-none d-sm-inline">{{ displayName }}</span>
-        <v-icon end>mdi-chevron-down</v-icon>
+        <v-icon size="small">mdi-chevron-down</v-icon>
       </v-btn>
     </template>
 
-    <v-list class="user-menu-list" min-width="200">
+    <v-list class="user-menu-list" min-width="200" :style="{ background: 'linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-secondary)) 100%)' }">
       <!-- Профиль -->
-      <v-list-item :to="$localePath('/dashboard')" class="menu-item">
+      <v-list-item :to="localePath('/profile')" class="menu-item" color="white">
         <template #prepend>
           <v-icon>mdi-account</v-icon>
         </template>
-        <v-list-item-title>{{ t('nav.profile') }}</v-list-item-title>
+        <v-list-item-title>{{ t("nav.profile") }}</v-list-item-title>
       </v-list-item>
 
       <!-- Дашборд -->
-      <v-list-item :to="$localePath('/dashboard')" class="menu-item">
+      <v-list-item :to="localePath('/dashboard')" class="menu-item" color="white">
         <template #prepend>
           <v-icon>mdi-view-dashboard</v-icon>
         </template>
-        <v-list-item-title>{{ t('nav.dashboard') }}</v-list-item-title>
-      </v-list-item>
-
-      <!-- Настройки -->
-      <v-list-item :to="$localePath('/profile/settings')" class="menu-item">
-        <template #prepend>
-          <v-icon>mdi-cog</v-icon>
-        </template>
-        <v-list-item-title>{{ t('nav.settings') }}</v-list-item-title>
+        <v-list-item-title>{{ t("nav.dashboard") }}</v-list-item-title>
       </v-list-item>
 
       <!-- Админ панель (если админ) -->
-      <v-list-item
-        v-if="isAdmin"
-        :to="$localePath('/admin')"
-        class="menu-item"
-      >
+      <v-list-item v-if="isAdmin" :to="localePath('/admin')" class="menu-item" color="white">
         <template #prepend>
           <v-icon>mdi-shield-crown</v-icon>
         </template>
-        <v-list-item-title>{{ t('nav.admin') }}</v-list-item-title>
+        <v-list-item-title>{{ t("nav.admin") }}</v-list-item-title>
       </v-list-item>
 
       <v-divider class="my-2" />
 
       <!-- Выход -->
-      <v-list-item @click="handleLogout" class="menu-item logout-item">
+      <v-list-item @click="handleLogout" class="menu-item logout-item" color="white">
         <template #prepend>
           <v-icon>mdi-logout</v-icon>
         </template>
-        <v-list-item-title>{{ t('nav.logout') }}</v-list-item-title>
+        <v-list-item-title>{{ t("nav.logout") }}</v-list-item-title>
       </v-list-item>
     </v-list>
-  </CustomMenu>
+  </v-menu>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useUser } from '~/composables/useUser'
-import CustomMenu from './CustomMenu.vue'
-import CustomAvatar from './CustomAvatar.vue'
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useUser } from "~/composables/useUser";
+import CustomAvatar from "./CustomAvatar.vue";
 
-const { t } = useI18n()
-const localePath = useLocalePath()
-const { user, clear } = useUser()
-const toast = useToast()
+const { t } = useI18n();
+const localePath = useLocalePath();
+const { user, clear } = useUser();
+const toast = useToast();
 
-// Отображаемое имя пользователя
+// Отображаемое имя пользователя (не используется, но оставляем на случай если понадобится)
 const displayName = computed(() => {
-  if (!user.value) return t('nav.guest')
-  return user.value.name || user.value.email || t('nav.user')
-})
+  if (!user.value) return t("nav.guest");
+  return user.value.name || t("nav.user");
+});
 
 // Проверка админских прав
 const isAdmin = computed(() => {
-  return user.value?.role === 'admin' || user.value?.role === 'moderator'
-})
+  return user.value?.role === "admin" || user.value?.role === "moderator";
+});
 
 // Обработка выхода из системы
 const handleLogout = async () => {
   try {
-    await clear()
+    await clear();
 
     toast.success({
-      title: t('auth.loggedOut'),
-      message: t('auth.logoutSuccess'),
-      position: 'topRight',
-      timeout: 3000
-    })
+      title: t("auth.loggedOut"),
+      message: t("auth.logoutSuccess"),
+      position: "topRight",
+      timeout: 3000,
+    });
 
     // Перенаправляем на главную страницу
-    await navigateTo(localePath('/'))
+    await navigateTo(localePath("/"));
   } catch (error) {
-    console.error('Logout error:', error)
+    console.error("Logout error:", error);
     toast.error({
-      title: t('auth.errorLogout'),
-      message: t('auth.logoutFailed'),
-      position: 'topRight',
-      timeout: 3000
-    })
+      title: t("auth.errorLogout"),
+      message: t("auth.logoutFailed"),
+      position: "topRight",
+      timeout: 3000,
+    });
   }
-}
+};
 </script>
 
 <style scoped>
 .user-menu-btn {
   text-transform: none !important;
   font-weight: normal !important;
-  padding: 8px 12px !important;
+  padding: 6px 8px !important;
+  min-width: auto !important;
+  min-height: 40px !important;
+  height: 40px !important;
 }
 
 .user-menu-list {

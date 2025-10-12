@@ -18,12 +18,21 @@ export const useUser = () => {
     if (loading.value) return;
 
     loading.value = true;
+    console.log("useUser: fetching user data...");
     try {
-      const response = await $fetch<{ user: User | null }>("/api/auth/session");
+      const response = await $fetch<{ user: User | null }>("/api/auth/session", {
+        credentials: 'include'
+      });
+
+      console.log("useUser: received response:", response);
+      
       user.value = response.user;
+      console.log("useUser: user state updated:", user.value);
+      return response;
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("useUser: error fetching user:", error);
       user.value = null;
+      throw error;
     } finally {
       loading.value = false;
     }
@@ -32,7 +41,11 @@ export const useUser = () => {
   // Функция для обновления пользователя
   const updateUser = (userData: Partial<User>) => {
     if (user.value) {
-      user.value = { ...user.value, ...userData };
+      // Создаем новый объект для триггера реактивности
+      user.value = {
+        ...user.value,
+        ...userData
+      };
     }
   };
 
@@ -59,18 +72,42 @@ export const useUser = () => {
     _csrf: string;
   }) => {
     loading.value = true;
+    console.log('useUser: login attempt for', credentials.email);
     try {
+      console.log('useUser: checking cookies before login:', document.cookie);
+      
       const response = await $fetch("/api/auth/login", {
         method: "POST",
         body: credentials,
+        credentials: 'include', // Важно для работы с cookie
       });
 
+      console.log('useUser: login response:', response);
+      console.log('useUser: checking cookies after login:', document.cookie);
+
+      // Добавляем небольшую задержку перед запросом данных пользователя,
+      // чтобы дать время на установку cookie
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // После успешного логина обновляем состояние пользователя
-      await fetchUser();
+      let attempts = 3;
+      while (attempts > 0) {
+        await fetchUser();
+        if (user.value) break;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts--;
+      }
+
+      console.log('useUser: user state after login:', user.value);
+
+      if (!user.value) {
+        console.error('useUser: user state is null after maximum retries');
+        throw new Error("Failed to fetch user after login");
+      }
 
       return response;
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("useUser: login error:", error);
       throw error;
     } finally {
       loading.value = false;

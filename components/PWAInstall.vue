@@ -7,32 +7,35 @@
     class="install-button"
     prepend-icon="mdi-download"
   >
-    {{ $t('install_app') }}
+    {{ t("install_app") }}
   </v-btn>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
-const showInstallButton = ref(false)
-let deferredPrompt: any = null
+import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const showInstallButton = ref(false);
+let deferredPrompt: any = null;
 
 onMounted(() => {
-  window.addEventListener('beforeinstallprompt', (e: Event) => {
-    e.preventDefault()
-    deferredPrompt = e
-    showInstallButton.value = true
-  })
-})
+  window.addEventListener("beforeinstallprompt", (e: Event) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallButton.value = true;
+  });
+});
 
 const installPWA = async () => {
-  if (!deferredPrompt) return
-  deferredPrompt.prompt()
-  const { outcome } = await deferredPrompt.userChoice
-  if (outcome === 'accepted') {
-    showInstallButton.value = false
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === "accepted") {
+    showInstallButton.value = false;
   }
-  deferredPrompt = null
-}
+  deferredPrompt = null;
+};
 </script>
 
 <style scoped>

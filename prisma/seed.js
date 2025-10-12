@@ -13,11 +13,12 @@ async function main() {
     update: { role: 'admin', password: adminHash },
     create: { email: adminEmail, role: 'admin', password: adminHash }
   })
+  console.log('Создаю пользователя Admin');
 
   // 10 random users
   for (let i = 0; i < 10; i++) {
     const email = `user${i + 1}@example.com`
-    const pass = 'password' + (i + 1)
+    const pass = '12345678'
     const hash = await bcrypt.hash(pass, 12)
     await prisma.user.upsert({
       where: { email },
@@ -25,6 +26,7 @@ async function main() {
       create: { email, password: hash }
     })
   }
+  console.log('Создаю 10 пользователей');
 }
 
 main()

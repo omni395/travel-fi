@@ -1,7 +1,21 @@
+// ...existing code...
 import { getCookie } from "h3";
 import crypto from "node:crypto";
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  // Пропускаем статические файлы, ресурсы и системные пути
+  if (
+    to.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/) ||
+    to.path.startsWith('/_nuxt/') ||
+    to.path.startsWith('/api/') ||
+    to.path.startsWith('/__nuxt/') ||
+    to.path.startsWith('/_loading/') ||
+    to.path.startsWith('/manifest') ||
+    to.path.startsWith('/favicon')
+  ) {
+    return;
+  }
+  
   console.log("🔐 Auth middleware: Processing route", to.path);
   const localePath = useLocalePath();
 

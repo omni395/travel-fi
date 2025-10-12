@@ -22,13 +22,39 @@
 9. **Пуш**: Web Push/WhatsApp ("Bronze unlocked!", "Wi-Fi в 1км").
 10. **Обмен**: Redeem 100 TRAVELFI → скидка $5 (Airalo). Премиум-фичи за TRAVELFI.
 
-### Фичи
+
+### Структура проекта
+```
+/
+├── app.vue
+├── nuxt.config.ts
+├── package.json
+├── Dockerfile, docker-compose.yml
+├── prisma/
+│   ├── schema.prisma
+│   └── migrations/
+├── server/
+│   ├── api/         # Все серверные эндпоинты (auth, user, wifi, token, push)
+│   ├── cron/        # Задания по расписанию (например, expire features)
+│   └── middleware/  # Серверные middleware (auth, csrf)
+├── components/      # UI-компоненты (Custom*, NavBar, Footer, PWAInstall)
+├── pages/           # Страницы приложения (index, dashboard, wifi, esim, profile, admin)
+├── layouts/         # Layout-файлы (default.vue, admin.vue)
+├── assets/          # Стили, изображения, иконки
+├── public/          # Статичные файлы (favicon, manifest, pwa-иконки)
+├── services/        # Логика Web3, push, AI (token.service.ts, push.service.ts)
+├── composables/     # Vue composables (useUser, useCsrf)
+├── plugins/         # Nuxt/Client/Server плагины (i18n, user)
+├── i18n/            # Локализация (locales/*.json, i18n.config.ts)
+```
+
+### Фичи (актуально на октябрь 2025)
 - **PWA**: 
-  - [x] Offline-режим (частично: кэш user в dashboard.vue)
-  - [x] Web Push
+  - [x] Offline-режим (кэширование, установка)
+  - [x] Web Push (подписка, отписка, отправка)
   - [x] Кнопка установки приложения
-  - [ ] Leaflet карты (в процессе)
-- **WhatsApp-бот**: /find, /add, /review, /check security (Twilio, не реализовано).
+  - [x] Leaflet карты (реализовано)
+- **WhatsApp-бот**: /find, /add, /review, /check security (Twilio, не реализовано)
 - **AI**:
   - [ ] Поиск: Ранжировка eSIM/Wi-Fi (Hugging Face, sentence-transformers)
   - [ ] Рефералка: Матчинг по гео (User.lastLocation)
@@ -40,12 +66,35 @@
   - [x] Open Graph разметка
   - [x] Schema.org разметка
 - **Web3**: 
-  - [ ] TRAVELFI как ERC-20 токен (Polygon mainnet, ethers.js)
-  - [x] Базовая интеграция Metamask (в процессе)
+  - [x] TRAVELFI как ERC-20 токен (Polygon mainnet, ethers.js, Moralis)
+  - [x] Интеграция Metamask, выдача токенов, баланс, история транзакций
 - **i18n**:
   - [x] Поддержка языков: en, ru, es, zh
   - [x] Автоопределение языка
   - [x] Переключение языка в интерфейсе
+
+### Что реализовано / что нет
+- [x] PWA, offline, Web Push, установка
+- [x] Аутентификация: email, Google, Metamask (SIWE)
+- [x] Геймификация: баллы, бейджи, лидерборд
+- [x] Добавление/поиск Wi-Fi, eSIM
+- [x] Отзывы, безопасность, модерация
+- [x] Web3: интеграция Metamask, выдача токенов, проверка баланса и истории
+- [x] Push: подписка, отписка, отправка уведомлений
+- [x] SEO: sitemap, robots.txt, Open Graph, Schema.org
+- [x] Мультиязычность: en, ru, es, zh
+- [ ] WhatsApp-бот (Twilio)
+- [ ] AI-ранжировка eSIM/Wi-Fi, рефералка, анализ токсичности
+- [ ] Полная интеграция Web3 (mint, обмен, премиум-фичи)
+- [ ] Блог (Nuxt Content)
+- [ ] CI/CD, тестирование, продакшн
+
+### Предложения по улучшению
+- Вынести все ключи и секреты в .env, не хранить в коде.
+- Для push-уведомлений использовать только один сервис и модель.
+- Для Web3 использовать только ethers.js и Moralis, не плодить сервисы.
+- Для AI — централизовать работу через один сервис (huggingface.service.ts).
+- Для новых фич — всегда проверять структуру и паттерны проекта.
 
 ### Плюшки (геймификация)
 - **Beginner (5 вкладов)**: Бейдж, +3 TRAVELFI, offlineMaps (3 дня).
@@ -200,3 +249,12 @@
 - Цвета в компонентах переведены на CSS‑переменные Vuetify: `rgb(var(--v-theme-primary))`, `rgb(var(--v-theme-secondary))`, `rgb(var(--v-theme-accent))` и т.д.
 - Рекомендуется избегать жёстких HEX‑значений в стилях. Используйте тему через переменные или пропсы Vuetify (`color="primary"`).
 - Добавление/изменение цветов — в `nuxt.config.ts → vuetify.vuetifyOptions.theme.themes.travelFi.colors`.
+
+
+
+
+
+1. если пользователь не авторизован и пытается добавить точку то его редиректить на страницу логина-регистрации.
+2. или можно сделать так, что пользователь который не вторизован не видит кнопку - добавить вайфай. (ну и запретить соответственно доступ в миддлварах)
+3. соответственно ни коментариевв ни очетов ни лайков дислайков анонимный пользователь не делает!!!!
+4. как тебе идея?

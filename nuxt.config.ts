@@ -2,8 +2,31 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   build: {
     transpile: ["vuetify"],
+  },
+
+  experimental: {
+    payloadExtraction: false,
+  },
+
+  app: {
+    head: {
+      title: 'TravelFi - Find Wi-Fi & eSIM',
+      htmlAttrs: {
+        lang: 'en'
+      },
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#0288D1' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+        { rel: 'manifest', href: '/manifest.json' }
+      ]
+    }
   },
   modules: [
     "@nuxtjs/i18n",
@@ -13,7 +36,6 @@ export default defineNuxtConfig({
     "nuxt-toast",
     "@nuxtjs/seo",
     "@vite-pwa/nuxt",
-    "@nuxtjs/leaflet",
     "nuxt-cron",
     "@vueuse/nuxt",
   ],
@@ -27,7 +49,7 @@ export default defineNuxtConfig({
           travelFi: {
             dark: false,
             colors: {
-              primary: "#0288D1",
+              primary: "#0288D1", // primary color from theme
               secondary: "#26A69A",
               accent: "#FF5722",
               error: "#D32F2F",
@@ -150,6 +172,9 @@ export default defineNuxtConfig({
           clientId: process.env.NUXT_PUBLIC_OAUTH_GOOGLE_CLIENT_ID || "",
         },
       },
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
+      tokenAddress: process.env.TOKEN_CONTRACT_ADDRESS || "",
+      polygonRPC: process.env.POLYGON_RPC_URL || "",
     },
     oauth: {
       google: {
@@ -158,5 +183,11 @@ export default defineNuxtConfig({
           process.env.NUXT_OAUTH_GOOGLE_REDIRECT_URL || "/api/auth/google",
       },
     },
+    huggingface: {
+      apiKey: process.env.HUGGINGFACE_API_KEY || "",
+    },
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || "",
+    tokenPrivateKey: process.env.TOKEN_PRIVATE_KEY || "",
   },
 });

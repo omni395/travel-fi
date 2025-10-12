@@ -1,29 +1,53 @@
-import { createI18n } from "vue-i18n";
+// i18n.config.ts
 
-// Asynchronously load JSON files
+import { defineI18nConfig } from '#imports';
+import { 
+  en as vuetifyEn, 
+  ru as vuetifyRu, 
+  es as vuetifyEs, 
+  zhHans as vuetifyZh // Используем zhHans для упрощенного китайского
+} from 'vuetify/locale'; 
+
+// Асинхронно загружаем JSON-файлы с вашими сообщениями
 async function loadMessages() {
-  const en = await import('./locales/en.json');
-  const ru = await import('./locales/ru.json');
-  const es = await import('./locales/es.json');
-  const zh = await import('./locales/zh.json');
+  // Ваши JSON-файлы (предполагаем, что они в папке ./locales)
+  const enAppMessages = await import('./locales/en.json');
+  const ruAppMessages = await import('./locales/ru.json');
+  const esAppMessages = await import('./locales/es.json');
+  const zhAppMessages = await import('./locales/zh.json');
 
   return {
-    en: en.default,
-    ru: ru.default,
-    es: es.default,
-    zh: zh.default,
+    // Объединение: Ваши сообщения приложения + Vuetify сообщения под ключом $vuetify
+    en: {
+      ...enAppMessages.default, 
+      $vuetify: vuetifyEn, 
+    },
+    ru: {
+      ...ruAppMessages.default,
+      $vuetify: vuetifyRu,
+    },
+    es: {
+      ...esAppMessages.default,
+      $vuetify: vuetifyEs,
+    },
+    zh: {
+      ...zhAppMessages.default,
+      $vuetify: vuetifyZh,
+    },
   };
 }
 
 export default defineI18nConfig(async () => {
   const messages = await loadMessages();
 
+  // Дополнительная проверка из вашего оригинального кода
   if (!messages.en || !messages.en.slogan) {
     //
   }
 
   return {
-    legacy: false,
+    // Vuetify 3 требует, чтобы legacy был false
+    legacy: false, 
     locale: "en",
     fallbackLocale: "en",
     messages,
