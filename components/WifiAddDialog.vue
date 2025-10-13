@@ -388,28 +388,14 @@ async function handleSubmit() {
       body: payload,
     });
     if (resp && resp.success) {
-      // Показываем сообщение успеха
-      toast.success({
-        title: t("common.success"), 
-        message: resp.data?.message || t("wifi.pointAddedPending"),
+      // При создании точки показываем только сообщение о модерации
+      // Баллы будут начислены только после проверки модератором
+      toast.info({
+        title: t("common.pending") || "Pending", 
+        message: t("wifi.pointAddedPending") || "Your Wi-Fi point has been submitted for moderation",
         position: "topRight",
         timeout: 3000
       });
-
-      // Показываем заработанные баллы (если есть)
-      if (resp?.data?.pointsEarned) {
-        setTimeout(() => {
-          toast.info({
-            title:
-              "🎉 " +
-              t("wifi.review.pointsEarned", {
-                points: resp.data.pointsEarned,
-              }),
-            position: "topRight",
-            timeout: 3000,
-          });
-        }, 500);
-      }
 
       if (resp.data && resp.data.point) {
         emit("success", resp.data.point);

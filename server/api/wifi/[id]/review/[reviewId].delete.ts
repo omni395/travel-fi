@@ -41,14 +41,37 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Отзываем награды в транзакции
+    // Отзываем награды в транзакции с увеличенным таймаутом
     await prisma.$transaction(async (tx) => {
+      // Получаем данные о награде
+      const contribution = await tx.contribution.findFirst({
+        where: {
+          userId,
+          targetId: reviewId,
+          type: "add_review",
+        },
+      });
+
+      // Удаляем отзыв
       await tx.review.delete({
         where: { id: reviewId },
       });
 
-      // Отзываем награды через reward service
-      await rewardService.revokeReview(userId);
+      if (contribution) {
+        // Отзываем очки
+        await tx.user.update({
+          where: { id: userId },
+          data: { points: { decrement: contribution.points } },
+        });
+
+        // Удаляем запись о награде
+        await tx.contribution.delete({
+          where: { id: contribution.id },
+        });
+      }
+    }, {
+      // Увеличиваем таймаут до 10 секунд
+      timeout: 10000,
     });
 
     return {

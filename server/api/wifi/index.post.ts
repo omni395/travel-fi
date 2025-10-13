@@ -26,12 +26,12 @@ export default defineEventHandler(async (event) => {
       });
     }
     const userId = auth.user.id;
-    // Запрещаем добавление точек для неподтверждённых пользователей
+    // Запрещаем добавление точек для пользователей с неполным профилем
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user?.confirmedEmail) {
+    if (!user?.confirmedEmail || !user?.name) {
       throw createError({
         statusCode: 403,
-        statusMessage: "Только подтверждённые пользователи могут добавлять точки Wi-Fi",
+        statusMessage: "complete_profile"
       });
     }
 

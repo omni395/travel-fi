@@ -29,6 +29,7 @@ const endpointAccess = {
     { method: "POST", path: "/api/auth/forgot" },
     { method: "POST", path: "/api/auth/siwe/verify" },
     { method: "GET", path: "/api/wifi" },
+    { method: "GET", path: "/api/wifi/*" },  // Разрешаем доступ к деталям точек
     { method: "GET", path: "/api/esim" },
     { method: "GET", path: "/api/sitemap.xml" },
     { method: "GET", path: "/" },
@@ -63,6 +64,7 @@ const endpointAccess = {
     { method: "GET", path: "/api/reviews" },
     { method: "*", path: "/api/notifications" },
     { method: "POST", path: "/api/wifi" },
+    { method: "POST", path: "/api/wifi/*/review" },
     { method: "POST", path: "/api/wifi/*/security-report" },
     { method: "PATCH", path: "/api/wifi/*/update" },
     { method: "DELETE", path: "/api/wifi/*" },
@@ -70,6 +72,8 @@ const endpointAccess = {
     { method: "DELETE", path: "/api/wifi/*/review/*" },
     { method: "PATCH", path: "/api/wifi/*/security-report/*" },
     { method: "DELETE", path: "/api/wifi/*/security-report/*" },
+    { method: "GET", path: "/api/wifi/*/reviews" },
+    { method: "GET", path: "/api/wifi/*/security-reports" },
     { method: "POST", path: "/api/esim" },
     { method: "*", path: "/api/security" },
     { method: "*", path: "/dashboard" },
@@ -85,7 +89,9 @@ const endpointAccess = {
   admin: [
     { method: "*", path: "/api/admin/*" },
     { method: "*", path: "/api/users/*" },
-    { method: "*", path: "/api/wifi/*" },
+    { method: "GET", path: "/api/wifi/pending" },  // Только модерация точек требует админа
+    { method: "PATCH", path: "/api/wifi/*/approve" },
+    { method: "PATCH", path: "/api/wifi/*/reject" },
     { method: "*", path: "/api/settings/*" },
     { method: "*", path: "/admin/*" },
   ] as EndpointRule[],
@@ -121,9 +127,11 @@ function matchPathAndMethod(
     const cleanPath = stripLocale(path).split("?")[0].replace(/\/$/, "");
     let cleanRule = rule.path.split("?")[0].replace(/\/$/, "");
 
-    if (cleanRule.endsWith("/*")) {
-      const prefix = cleanRule.slice(0, -2);
-      return cleanPath.startsWith(prefix);
+    // Превращаем шаблон с * в regex паттерн
+    if (cleanRule.includes("*")) {
+      const pattern = cleanRule.replace(/\*/g, "[^/]+").replace(/\//g, "\\/");
+      const regex = new RegExp(`^${pattern}$`);
+      return regex.test(cleanPath);
     } else {
       return cleanPath === cleanRule;
     }
@@ -333,7 +341,7 @@ export default defineEventHandler(async (event) => {
         (method === "PATCH" && stripLocale(path) === "/api/user/profile") ||
         (method === "POST" && stripLocale(path) === "/api/user/profile/avatar") ||
         (method === "POST" && stripLocale(path) === "/api/user/profile/wallet") ||
-        (method === "POST" && stripLocale(path).match(/^\/api\/wifi\/\d+\/security-report$/)) ||
+        (method === "POST" && stripLocale(path).match(/^\/api\/wifi\/\d+\/(review|security-report)$/)) ||
         (method === "PATCH" && stripLocale(path).match(/^\/api\/wifi\/\d+\/update$/)) ||
         (method === "DELETE" && stripLocale(path).match(/^\/api\/wifi\/\d+$/))
       )

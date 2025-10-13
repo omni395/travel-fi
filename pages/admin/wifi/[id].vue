@@ -107,7 +107,7 @@ async function load() {
   loading.value = true
   try {
     const id = route.params.id
-    const res: any = await $fetch(`/api/wifi/${id}`, { method: 'GET' })
+    const res: any = await $fetch(`/api/admin/wifi/${id}`, { method: 'GET' })
     if (res.success) point.value = res.data
   } catch (err) {
     console.error('Failed to load point', err)

@@ -5,9 +5,8 @@ import prisma from "~/lib/prisma";
 
 // Валидация данных отчета о безопасности
 const securityReportSchema = z.object({
-  risks: z.string().min(10).max(1000),
   rating: z.number().min(1).max(5),
-  comment: z.string().max(500).optional(),
+  comment: z.string().min(30).max(500),
 });
 
 export default defineEventHandler(async (event) => {
@@ -82,24 +81,15 @@ export default defineEventHandler(async (event) => {
     }
 
     // AI проверка токсичности описания рисков
-    const isToxicRisks = await checkToxicity(validatedData.risks);
-    if (isToxicRisks) {
+    const isToxic = await checkToxicity(validatedData.comment);
+    if (isToxic) {
       throw createError({
         statusCode: 400,
         statusMessage: "Report contains inappropriate content",
       });
     }
 
-    // AI проверка токсичности комментария
-    if (validatedData.comment && validatedData.comment.trim().length > 0) {
-      const isToxicComment = await checkToxicity(validatedData.comment);
-      if (isToxicComment) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: "Comment contains inappropriate content",
-        });
-      }
-    }
+
 
     // Создаем отчет и начисляем баллы в транзакции
     const result = await prisma.$transaction(async (tx: any) => {
@@ -108,7 +98,7 @@ export default defineEventHandler(async (event) => {
         data: {
           userId,
           wifiPointId: pointId,
-          risks: validatedData.risks,
+
           rating: validatedData.rating,
           comment: validatedData.comment,
           status: "pending", // требует проверки модератором

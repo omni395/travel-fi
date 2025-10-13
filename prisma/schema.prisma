@@ -69,6 +69,9 @@ model UserFeature {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   feature   String // "unlimited_search", "offline_map"
+  expiresAt DateTime? // When the feature expires
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
 

@@ -314,17 +314,17 @@
               />
 
               <v-textarea
-                v-model="securityForm.risks"
-                :label="t('wifi.securityReport.description')"
-                :placeholder="t('wifi.securityReport.descriptionPlaceholder')"
-                :hint="t('wifi.securityReport.descriptionHint')"
-                :counter="1000"
+                v-model="securityForm.comment"
+                :label="t('wifi.securityReport.comment')"
+                :placeholder="t('wifi.securityReport.commentPlaceholder')"
+                :hint="t('wifi.securityReport.commentHint')"
+                :counter="500"
                 :rules="[
-                  (v) => !!v || t('wifi.securityReport.required'),
+                  (v) => !!v || t('wifi.securityReport.commentRequired'),
                   (v) => (v && v.length >= 30) || t('wifi.securityReport.commentMinLength')
                 ]"
                 variant="outlined"
-                rows="5"
+                rows="4"
                 auto-grow
                 required
               />
@@ -344,7 +344,7 @@
               <CustomButton
                 color="warning"
                 :loading="submittingSecurity"
-                :disabled="!securityForm.rating || !securityForm.risks || securityForm.risks.length < 30"
+                :disabled="!securityForm.rating || !securityForm.comment || securityForm.comment.length < 30"
                 @click="submitSecurityReport"
               >
                 {{ t("wifi.securityReport.submit") }}
@@ -407,7 +407,7 @@ const reviewDialog = ref(false);
 const reviewForm = reactive({ rating: 0, comment: "" });
 const editingReview = ref<any>(null);
 const securityDialog = ref(false);
-const securityForm = reactive({ rating: 0, risks: "" });
+const securityForm = reactive({ rating: 0, comment: "" });
 const editingSecurityReport = ref<any>(null);
 const submittingReview = ref(false);
 const submittingSecurity = ref(false);
@@ -700,7 +700,10 @@ async function submitReview() {
         method: "PATCH",
         body: payload,
         credentials: "include",
-        headers: { 'x-csrf-token': csrfToken },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken 
+        },
       });
       toast.success({ title: t("common.success"), message: t("wifi.review.updated") || "Review updated successfully", position: "topRight" });
     } else {
@@ -709,7 +712,10 @@ async function submitReview() {
         method: "POST",
         body: payload,
         credentials: "include",
-        headers: { 'x-csrf-token': csrfToken },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken 
+        },
       });
       toast.success({ title: t("common.success"), message: t("wifi.review.thanks"), position: "topRight" });
     }
@@ -758,7 +764,10 @@ async function submitSecurityReport() {
         method: "PATCH",
         body: payload,
         credentials: "include",
-        headers: { 'x-csrf-token': csrfToken },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken 
+        },
       });
       toast.success({ title: t("common.success"), message: t("wifi.securityReport.updated") || "Security report updated successfully", position: "topRight" });
     } else {
@@ -766,7 +775,10 @@ async function submitSecurityReport() {
         method: "POST",
         body: payload,
         credentials: "include",
-        headers: { 'x-csrf-token': csrfToken },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken 
+        },
       });
       toast.success({ title: t("common.success"), message: t("wifi.securityReport.thanks"), position: "topRight" });
     }
@@ -798,12 +810,6 @@ async function submitSecurityReport() {
 }
 
 async function handlePointAdded(point: any) {
-  toast.success({
-    title: t("common.success"),
-    message: t("wifi.pointAddedPending"),
-    position: "topRight",
-    timeout: 3000,
-  });
   try {
     // Do not show pending points in the public list/map. Reload approved points.
     await loadWifiPoints();
